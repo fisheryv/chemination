@@ -1,0 +1,19 @@
+import pygame
+
+# 游戏窗口设置
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+FPS = 120
+
+# 颜色定义
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 100, 100)
+BLUE = (100, 100, 255)
+GREEN = (100, 255, 100)
+YELLOW = (255, 255, 0)
+GRAY = (200, 200, 200)
+DARK_GRAY = (100, 100, 100)
+DARK_RED = (200, 0, 0)
+DARK_BLUE = (0, 0, 200)
+DARK_GREEN = (0, 200, 0)
