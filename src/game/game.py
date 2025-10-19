@@ -13,6 +13,7 @@ from src.game.options import OptionsScene
 from src.utils.effects import EffectsManager
 from src.utils.hud import HUD
 from src.game.main_menu import MainMenuScene
+from src.utils.tools import resource_path
 
 
 class Game:
@@ -82,7 +83,7 @@ class Game:
         try:
             music_path = os.path.join("assets/audios", "bgm.mp3")
             if os.path.exists(music_path):
-                pygame.mixer.music.load(music_path)
+                pygame.mixer.music.load(resource_path(music_path))
                 pygame.mixer.music.set_volume(0.7)  # 设置音量
                 self.music_loaded = True
                 print("Background music loaded successfully")

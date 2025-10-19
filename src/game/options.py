@@ -4,6 +4,7 @@ from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, GOLD, WHITE
 from src.entities.button import ImageButton
 from src.entities.switcher import Switcher
 from src.game.scene import Scene
+from src.utils.tools import resource_path
 
 option_text = [
     "Music:",
@@ -15,11 +16,11 @@ class OptionsScene(Scene):
 
     def __init__(self, parent):
         super().__init__(parent)  # 调用父类的构造方法
-        self.background = pygame.image.load("assets/images/ui/options_bg.jpg")  # 背景图
-        self.img = pygame.image.load("assets/images/ui/placeholder.jpg")  # 装饰图
+        self.background = pygame.image.load(resource_path("assets/images/ui/options_bg.jpg"))  # 背景图
+        self.img = pygame.image.load(resource_path("assets/images/ui/placeholder.jpg"))  # 装饰图
         self.img = pygame.transform.scale(self.img, (400, 400))
         try:
-            font = pygame.font.Font("assets/fonts/PixelEmulator.ttf", 28)
+            font = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 28)
         except FileNotFoundError:
             # 如果字体文件不存在，使用系统默认字体
             font = pygame.font.SysFont(None, 28)
@@ -32,7 +33,7 @@ class OptionsScene(Scene):
         button_height = 50
         _x = 20
         _y = 30
-        button_back = ImageButton("assets/images/ui/back_arrow.png",
+        button_back = ImageButton(resource_path("assets/images/ui/back_arrow.png"),
                                   _x, _y, button_width, button_height,
                                   action=self.parent.main_menu)
         button_width = 127

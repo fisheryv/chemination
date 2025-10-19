@@ -3,6 +3,7 @@ import pygame
 from src.config.settings import SCREEN_WIDTH, GOLD, WHITE
 from src.entities.button import ImageButton
 from src.game.scene import Scene
+from src.utils.tools import resource_path
 
 credits_text = [
     "Producer:", "Fisher, Lucas",
@@ -17,10 +18,10 @@ class CreditsScene(Scene):
 
     def __init__(self, parent):
         super().__init__(parent)  # 调用父类的构造方法
-        self.background = pygame.image.load("assets/images/ui/credits_bg.jpg")  # 背景图
+        self.background = pygame.image.load(resource_path("assets/images/ui/credits_bg.jpg"))  # 背景图
         try:
-            font1 = pygame.font.Font("assets/fonts/PixelEmulator.ttf", 28)
-            font2 = pygame.font.Font("assets/fonts/PixelEmulator.ttf", 28)
+            font1 = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 28)
+            font2 = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 28)
         except FileNotFoundError:
             # 如果字体文件不存在，使用系统默认字体
             font1 = pygame.font.SysFont(None, 28)
@@ -38,7 +39,7 @@ class CreditsScene(Scene):
         button_height = 50
         _x = 20
         _y = 30
-        button_back = ImageButton("assets/images/ui/back_arrow.png",
+        button_back = ImageButton(resource_path("assets/images/ui/back_arrow.png"),
                                   _x, _y, button_width, button_height,
                                   action=self.parent.main_menu)
 

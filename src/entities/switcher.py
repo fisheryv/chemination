@@ -1,6 +1,6 @@
 import pygame
 
-from src.utils.tools import create_alpha_image
+from src.utils.tools import create_alpha_image, resource_path
 
 
 class Switcher(pygame.sprite.Sprite):
@@ -23,8 +23,8 @@ class Switcher(pygame.sprite.Sprite):
         super().__init__()
 
         # 加载并处理图片
-        self.original_image_on = pygame.image.load("assets/images/ui/switcher_on.png").convert_alpha()
-        self.original_image_off = pygame.image.load("assets/images/ui/switcher_off.png").convert_alpha()
+        self.original_image_on = pygame.image.load(resource_path("assets/images/ui/switcher_on.png")).convert_alpha()
+        self.original_image_off = pygame.image.load(resource_path("assets/images/ui/switcher_off.png")).convert_alpha()
 
         # 调整图片大小（如果指定了尺寸）
         if width and height:

@@ -70,6 +70,12 @@ chemgame/
 - Python 3.x
 - Pygame 2.6.1
 
+## Packaging
+
+```bash
+pyinstaller main.spec
+```
+
 ## License
 
 This project is open source and available under the MIT License.

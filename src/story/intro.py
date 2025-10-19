@@ -2,6 +2,7 @@ import pygame
 import time
 
 from src.config.settings import FPS, GOLD
+from src.utils.tools import resource_path
 
 story_book = [
     {
@@ -54,11 +55,11 @@ class StoryScene:
     """
 
     def __init__(self, bg: str, text: list[str]):
-        self.bg = "assets/images/story/" + bg
+        self.bg = resource_path("assets/images/story/" + bg)
         self.text = text
         # 加载TTF字体文件
         try:
-            self.font = pygame.font.Font("assets/fonts/PixelEmulator.ttf", 36)
+            self.font = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 36)
         except FileNotFoundError:
             # 如果字体文件不存在，使用系统默认字体
             self.font = pygame.font.SysFont(None, 36)
