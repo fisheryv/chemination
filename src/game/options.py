@@ -1,6 +1,6 @@
 import pygame
 
-from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, GOLD, WHITE
+from src.config.settings import WHITE, get_option
 from src.entities.button import ImageButton
 from src.entities.switcher import Switcher
 from src.game.scene import Scene
@@ -8,7 +8,7 @@ from src.utils.tools import resource_path
 
 option_text = [
     "Music:",
-    "Skip Intro:"
+    "Intro:"
 ]
 
 
@@ -38,13 +38,15 @@ class OptionsScene(Scene):
                                   action=self.parent.main_menu)
         button_width = 127
         button_height = 60
-        _x = 900
+        _x = 850
         _y = 150
-        music_switcher = Switcher(_x, _y, button_width, button_height,
+        _initial_state = get_option("game", "music") == "on"
+        music_switcher = Switcher(_x, _y, button_width, button_height, initial_state=_initial_state,
                                   action=self.parent.music_toggle)
 
         _y = _y + 100
-        intro_switcher = Switcher(_x, _y, button_width, button_height,
+        _initial_state = get_option("game", "intro") == "on"
+        intro_switcher = Switcher(_x, _y, button_width, button_height, initial_state=_initial_state,
                                   action=self.parent.intro_toggle)
         # 创建精灵组
         self.all_sprites = pygame.sprite.Group()
@@ -59,7 +61,7 @@ class OptionsScene(Scene):
         screen.blit(self.img, (150, 120))
         current_y = 160
         for line_surface in self.line_surfaces:
-            line_x = 880 - line_surface.get_width()
+            line_x = 830 - line_surface.get_width()
             screen.blit(line_surface, (line_x, current_y))
             current_y += line_surface.get_height() + 70  # 5像素行间距
         self.all_sprites.draw(screen)

@@ -1,6 +1,6 @@
 import pygame
 
-from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, GOLD, WHITE
+from src.config.settings import WHITE
 from src.entities.button import ImageButton
 from src.entities.switcher import Switcher
 from src.game.scene import Scene

@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, GAME_NAME
+from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, GAME_NAME, load_settings, get_option
 from src.utils.tools import resource_path
 
 
@@ -16,9 +16,12 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption(GAME_NAME)
     print("Pygame initialized")
-    from src.story.intro import play_story
-    print("Tell the game story")
-    play_story(screen)
+    load_settings()
+    _intro = get_option("game", "intro")
+    if _intro == "on":
+        from src.story.intro import play_story
+        print("Tell the game story")
+        play_story(screen)
 
     from src.game.game import Game
     print("Game module imported")

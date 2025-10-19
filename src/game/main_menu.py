@@ -1,5 +1,3 @@
-import sys
-
 import pygame
 
 from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT

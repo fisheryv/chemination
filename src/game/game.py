@@ -2,7 +2,6 @@ import pygame
 import random
 import time
 import sys
-import os
 from src.config.settings import *
 from src.data.chemicals import get_formulas_by_difficulty
 from src.entities.block import ChemicalBlock
@@ -66,9 +65,17 @@ class Game:
 
     def music_toggle(self, state: bool):
         print(f"Music toggled: {state}")
+        set_option("game", "music", "on" if state else "off")
+        save_settings()
+        if state:
+            self.play_background_music()
+        else:
+            self.stop_background_music()
 
     def intro_toggle(self, state: bool):
         print(f"Intro toggled: {state}")
+        set_option("game", "intro", "on" if state else "off")
+        save_settings()
 
     def game_over(self):
         self.game_state = "GAME_OVER"  # MENU, PLAYING, GAME_OVER
@@ -87,7 +94,10 @@ class Game:
                 pygame.mixer.music.set_volume(0.7)  # 设置音量
                 self.music_loaded = True
                 print("Background music loaded successfully")
-                self.play_background_music()
+                if get_option("game", "music") == "off":
+                    self.stop_background_music()
+                else:
+                    self.play_background_music()
             else:
                 print(f"Background music file not found: {music_path}")
         except pygame.error as e:

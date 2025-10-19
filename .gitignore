@@ -1,4 +1,5 @@
 .idea
+setting.ini
 build/
 dist/
 QWEN.md
