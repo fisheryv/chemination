@@ -1,4 +1,4 @@
 .idea
-./build
-./dist
+build/
+dist/
 QWEN.md
