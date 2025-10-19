@@ -16,13 +16,9 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption(GAME_NAME)
     print("Pygame initialized")
+    # 加载设置
     load_settings()
-    _intro = get_option("game", "intro")
-    if _intro == "on":
-        from src.story.intro import play_story
-        print("Tell the game story")
-        play_story(screen)
-
+    # 进入游戏主循环
     from src.game.game import Game
     print("Game module imported")
     game = Game(screen)

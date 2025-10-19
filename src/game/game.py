@@ -9,6 +9,7 @@ from src.entities.player import Player
 from src.game.credits import CreditsScene
 from src.game.game_over import GameOverScene
 from src.game.options import OptionsScene
+from src.game.story import StoryScene
 from src.utils.effects import EffectsManager
 from src.utils.hud import HUD
 from src.game.main_menu import MainMenuScene
@@ -29,8 +30,13 @@ class Game:
             "simhei.ttf") else pygame.font.Font(None, 28)
 
         self.running = True
-        self.game_state = "MENU"  # MENU, PLAYING, GAME_OVER
-        self.current_scene = MainMenuScene(self)
+        _intro = get_option("game", "intro")
+        if _intro == "on":
+            self.game_state = "INTRO"  # MENU, PLAYING, GAME_OVER
+            self.current_scene = StoryScene(self)
+        else:
+            self.game_state = "MENU"
+            self.current_scene = MainMenuScene(self)
         self.player = None
         self.blocks = []
         self.start_time = 0
