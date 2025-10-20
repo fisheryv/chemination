@@ -24,6 +24,8 @@ DARK_GRAY = (100, 100, 100)
 DARK_RED = (200, 0, 0)
 DARK_BLUE = (0, 0, 200)
 DARK_GREEN = (0, 200, 0)
+PINK = (229, 71, 130)
+CYAN = (65, 166, 220)
 
 OPTIONS = {
     "game": {
