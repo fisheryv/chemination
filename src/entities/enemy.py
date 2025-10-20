@@ -2,28 +2,20 @@ import random
 
 import pygame
 
-from src.config.settings import RED, SCREEN_WIDTH, SCREEN_HEIGHT
+from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, WHITE
+from src.entities.bullet import BulletType
+from src.utils.tools import load_sprite_row, resource_path
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, name, params):
         super().__init__()
+        self.name = name
+        self.params = params
         # 创建敌人动画帧
-        self.frames = []
-        for i in range(4):
-            surf = pygame.Surface((60, 50), pygame.SRCALPHA)
-            pygame.draw.rect(surf, RED, (0, 0, 60, 50), border_radius=8)
-            pygame.draw.rect(surf, (200, 0, 0), (15, 10, 30, 15), border_radius=5)  # 头部
-            pygame.draw.rect(surf, (200, 0, 0), (20, 30, 20, 15), border_radius=3)  # 身体
-
-            # 添加一些变化来模拟行走
-            if i % 2 == 0:
-                pygame.draw.rect(surf, (200, 0, 0), (10, 35, 10, 10), border_radius=3)  # 左腿
-                pygame.draw.rect(surf, (200, 0, 0), (40, 30, 10, 15), border_radius=3)  # 右腿
-            else:
-                pygame.draw.rect(surf, (200, 0, 0), (10, 30, 10, 15), border_radius=3)  # 左腿
-                pygame.draw.rect(surf, (200, 0, 0), (40, 35, 10, 10), border_radius=3)  # 右腿
-            self.frames.append(surf)
+        self.frames = load_sprite_row(f"assets/images/enemy/{name}.png", 4, scale=1)
+        self.heart1 = pygame.image.load(resource_path("assets/images/ui/heart1.png"))
+        self.heart3 = pygame.image.load(resource_path("assets/images/ui/heart3.png"))
 
         self.current_frame = 0
         self.animation_speed = 0.15
@@ -32,10 +24,14 @@ class Enemy(pygame.sprite.Sprite):
 
         # 从屏幕右侧随机位置生成
         self.rect.x = SCREEN_WIDTH + random.randint(0, 100)
-        self.rect.y = random.randint(50, SCREEN_HEIGHT - 50)
+        self.rect.y = random.randint(120, SCREEN_HEIGHT - 120 - self.rect.height)
 
-        self.speed = random.randint(2, 5)
-        self.health = 3
+        self.speed = params["speed"]
+        self.health = params["hp"]
+        self.type = params["type"]
+
+        font = pygame.font.SysFont(None, 24)
+        self.name_surface = font.render(self.name, True, WHITE)
 
     def update(self):
         self.rect.x -= self.speed
@@ -45,12 +41,27 @@ class Enemy(pygame.sprite.Sprite):
         if self.current_frame >= len(self.frames):
             self.current_frame = 0
         self.image = self.frames[int(self.current_frame)]
-
         # 如果敌人离开屏幕左侧，则删除
         if self.rect.right < 0:
+            # TODO 扣除Hero生命
             self.kill()
 
-    def take_damage(self):
-        self.health -= 1
-        if self.health <= 0:
-            self.kill()
+    def draw_hp(self, screen):
+        _x = self.rect.x + (self.rect.width - self.heart1.get_width() * self.params["hp"]) / 2
+        for i in range(self.params["hp"]):
+            screen.blit(self.heart3 if i < self.health else self.heart1,
+                        (_x + i * self.heart3.get_width(), self.rect.y - self.heart3.get_height()))
+        _x = self.rect.x + (self.rect.width - self.name_surface.get_width()) / 2
+        screen.blit(self.name_surface, (_x, self.rect.bottom))
+
+    def take_damage(self, bullet_type):
+        if bullet_type == BulletType.ACID:
+            _damage = self.type == "metal" or self.type == "base"
+        elif bullet_type == BulletType.BASE:
+            _damage = self.type == "acid"
+        else:
+            _damage = self.type == "salt"
+        if _damage:
+            self.health -= 1
+            if self.health <= 0:
+                self.kill()

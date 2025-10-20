@@ -26,7 +26,7 @@ def resource_path(relative_path):
 # 精灵图分割函数
 def load_sprite_sheet(filename, rows, cols, directions=('down', 'left', 'right', 'up'), scale=1):
     """从精灵图中加载并分割所有帧"""
-    filepath = resource_path("assets/images/spirits/" + filename)
+    filepath = resource_path(filename)
     sprite_sheet = pygame.image.load(filepath).convert_alpha()
     frame_width = sprite_sheet.get_width() // cols
     frame_height = sprite_sheet.get_height() // rows
@@ -48,30 +48,23 @@ def load_sprite_sheet(filename, rows, cols, directions=('down', 'left', 'right',
 
     return frames
 
-# 精灵图分割函数
-def load_sprite_sheet2(filename, rows, cols, scale=1):
+
+# 精灵图(单行)分割函数
+def load_sprite_row(filename, cols, scale=1):
     """从精灵图中加载并分割所有帧"""
-    filepath = resource_path("assets/images/spirits/" + filename)
+    filepath = resource_path(filename)
     sprite_sheet = pygame.image.load(filepath).convert_alpha()
     frame_width = sprite_sheet.get_width() // cols
-    frame_height = sprite_sheet.get_height() // rows
+    frame_height = sprite_sheet.get_height()
 
-    frames = {}
-    directions = ["down", "left", "up"]
-    for row in range(rows):
-        direction_frames = []
-        for col in range(cols):
-            frame = sprite_sheet.subsurface(
-                pygame.Rect(col * frame_width, row * frame_height, frame_width, frame_height)
-            )
-            if scale != 1:
-                new_width = int(frame_width * scale)
-                new_height = int(frame_height * scale)
-                frame = pygame.transform.scale(frame, (new_width, new_height))
-            direction_frames.append(frame)
-        frames[directions[row]] = direction_frames
     direction_frames = []
-    for f in frames["left"]:
-        direction_frames.append(pygame.transform.flip(f, True, False))
-    frames["right"] = direction_frames
-    return frames
+    for col in range(cols):
+        frame = sprite_sheet.subsurface(
+            pygame.Rect(col * frame_width, 0, frame_width, frame_height)
+        )
+        if scale != 1:
+            new_width = int(frame_width * scale)
+            new_height = int(frame_height * scale)
+            frame = pygame.transform.scale(frame, (new_width, new_height))
+        direction_frames.append(frame)
+    return direction_frames

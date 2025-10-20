@@ -32,7 +32,7 @@ class ProcessBar:
             self.progress = 0
         elif self.progress > 100:
             self.progress = 100
-        self.bar_w = (self.width - self.size * 8) * progress / 100
+        self.bar_w = (self.width - self.size * 6) * progress / 100
 
     def get_progress(self):
         """获取进度"""
@@ -42,7 +42,7 @@ class ProcessBar:
         _x_offset = 0
         if self.icon:
             screen.blit(self.icon, (self.x, self.y))
-            _x_offset = self.height
+            _x_offset = self.height+10
         # 绘制进度条外框
         _h = self.size
         for i in range(2):

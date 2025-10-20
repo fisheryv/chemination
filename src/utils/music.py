@@ -50,7 +50,7 @@ def pause_background_music():
     music_playing = False
 
 
-def unpause_background_music():
+def resume_background_music():
     """恢复背景音乐"""
     global music_playing
     pygame.mixer.music.unpause()

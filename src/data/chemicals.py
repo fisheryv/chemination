@@ -1,5 +1,3 @@
-import random
-
 ENEMIES = {
     "HCl": {
         "type": "acid",
