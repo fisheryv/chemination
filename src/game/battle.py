@@ -2,7 +2,7 @@ import random
 
 import pygame
 
-from src.config.settings import PINK, WHITE, CYAN, SCREEN_WIDTH, BLACK, SCREEN_HEIGHT
+from src.config.settings import PINK, WHITE, CYAN, SCREEN_WIDTH, BLACK, SCREEN_HEIGHT, GREEN, RED
 from src.data.chemicals import ENEMIES
 from src.entities.bullet import Bullet
 from src.entities.button import ImageButton
@@ -10,6 +10,7 @@ from src.entities.enemy import Enemy
 from src.entities.hero import Hero
 from src.entities.processbar import ProcessBar
 from src.game.scene import Scene
+from src.utils.effects import EffectsManager
 from src.utils.music import load_background_music, pause_background_music, resume_background_music
 from src.utils.tools import resource_path
 
@@ -26,10 +27,10 @@ class BattleScene(Scene):
                                         SCREEN_WIDTH - 120, 10, 82, 30,
                                         action=self.pause_game)
         try:
-            font = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 20)
+            self.font = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 20)
         except FileNotFoundError:
             # 如果字体文件不存在，使用系统默认字体
-            font = pygame.font.SysFont(None, 24)
+            self.font = pygame.font.SysFont(None, 24)
 
         self.hp = 100
         self.mp = 0
@@ -42,13 +43,16 @@ class BattleScene(Scene):
         self.rectangle.fill((255, 255, 255, 128))
 
         self.kill_count = 0
-        self.kill_count_text = font.render("Kill Count:" + str(self.kill_count), True, BLACK)
+        self.kill_count_text = self.font.render("Kill Count:" + str(self.kill_count), True, BLACK)
 
         # 创建精灵组
         self.all_sprites = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.ui_sprites = pygame.sprite.Group(self.pause_button)
+
+        # 特效管理器
+        self.effects_manager = EffectsManager()
 
         # 创建玩家
         self.player = Hero(self)
@@ -110,7 +114,14 @@ class BattleScene(Scene):
         hits = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False)
         for bullet, enemy_list in hits.items():
             for enemy in enemy_list:
-                enemy.take_damage(bullet.bullet_type)
+                is_killed = enemy.take_damage(bullet.bullet_type)
+                if is_killed:
+                    self.kill_count += 1
+                    self.kill_count_text = self.font.render("Kill Count:" + str(self.kill_count), True, BLACK)
+                    self.effects_manager.add_effect(enemy.rect.x, enemy.rect.centery, 'correct')
+
+        # 更新特效
+        self.effects_manager.update_effects()
 
     def render(self, screen):
         # 绘制背景
@@ -126,6 +137,8 @@ class BattleScene(Scene):
         self.all_sprites.draw(screen)
         for e in self.enemies:
             e.draw_hp(screen)
+        # 绘制特效
+        self.effects_manager.draw_effects(screen, GREEN, RED)
         # 绘制暂停界面
         if not self.is_running:
             screen.blit(self.overlay, (0, 0))

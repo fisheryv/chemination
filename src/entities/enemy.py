@@ -54,7 +54,7 @@ class Enemy(pygame.sprite.Sprite):
         _x = self.rect.x + (self.rect.width - self.name_surface.get_width()) / 2
         screen.blit(self.name_surface, (_x, self.rect.bottom))
 
-    def take_damage(self, bullet_type):
+    def take_damage(self, bullet_type) -> bool:
         if bullet_type == BulletType.ACID:
             _damage = self.type == "metal" or self.type == "base"
         elif bullet_type == BulletType.BASE:
@@ -64,4 +64,7 @@ class Enemy(pygame.sprite.Sprite):
         if _damage:
             self.health -= 1
             if self.health <= 0:
+                # TODO 击杀数+1
                 self.kill()
+                return True
+        return False
