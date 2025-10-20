@@ -1,3 +1,5 @@
+from enum import Enum
+
 import pygame
 import random
 import time
@@ -6,6 +8,7 @@ from src.config.settings import *
 from src.data.chemicals import get_formulas_by_difficulty
 from src.entities.block import ChemicalBlock
 from src.entities.player import Player
+from src.game.battle import BattleScene
 from src.game.credits import CreditsScene
 from src.game.game_over import GameOverScene
 from src.game.options import OptionsScene
@@ -13,7 +16,17 @@ from src.game.story import StoryScene
 from src.utils.effects import EffectsManager
 from src.utils.hud import HUD
 from src.game.main_menu import MainMenuScene
-from src.utils.tools import resource_path
+from src.utils.music import play_background_music, stop_background_music, load_background_music
+
+
+class SceneType(Enum):
+    INTRO = "INTRO"
+    MENU = "MENU"
+    OPTIONS = "OPTIONS"
+    CREDITS = "CREDITS"
+    HELP = "HELP"
+    BATTLE = "BATTLE"
+    GAME_OVER = "GAME_OVER"
 
 
 class Game:
@@ -32,10 +45,10 @@ class Game:
         self.running = True
         _intro = get_option("game", "intro")
         if _intro == "on":
-            self.game_state = "INTRO"  # MENU, PLAYING, GAME_OVER
+            self.game_state = SceneType.INTRO
             self.current_scene = StoryScene(self)
         else:
-            self.game_state = "MENU"
+            self.game_state = SceneType.MENU
             self.current_scene = MainMenuScene(self)
         self.player = None
         self.blocks = []
@@ -52,31 +65,33 @@ class Game:
         self.hud = HUD()
 
         # 背景音乐
-        self.bg_music = None
-        self.music_loaded = False
-        self.music_playing = False
-        self.load_background_music()
+        load_background_music("bgm.mp3")
+        # play_background_music()
 
     def main_menu(self):
-        self.game_state = "MENU"  # MENU, PLAYING, GAME_OVER
+        self.game_state = SceneType.MENU
         self.current_scene = MainMenuScene(self)
 
     def credits(self):
-        self.game_state = "CREDITS"  # MENU, PLAYING, GAME_OVER
+        self.game_state = SceneType.CREDITS
         self.current_scene = CreditsScene(self)
 
     def options(self):
-        self.game_state = "OPTIONS"  # MENU, PLAYING, GAME_OVER
+        self.game_state = SceneType.OPTIONS
         self.current_scene = OptionsScene(self)
+
+    def battle(self):
+        self.game_state = SceneType.BATTLE
+        self.current_scene = BattleScene(self)
 
     def music_toggle(self, state: bool):
         print(f"Music toggled: {state}")
         set_option("game", "music", "on" if state else "off")
         save_settings()
         if state:
-            self.play_background_music()
+            play_background_music()
         else:
-            self.stop_background_music()
+            stop_background_music()
 
     def intro_toggle(self, state: bool):
         print(f"Intro toggled: {state}")
@@ -84,53 +99,12 @@ class Game:
         save_settings()
 
     def game_over(self):
-        self.game_state = "GAME_OVER"  # MENU, PLAYING, GAME_OVER
+        self.game_state = SceneType.GAME_OVER
         self.current_scene = GameOverScene(self)
 
     def exit_game(self):
         pygame.quit()
         sys.exit()
-
-    def load_background_music(self):
-        """加载背景音乐"""
-        try:
-            music_path = os.path.join("assets/audios", "bgm.mp3")
-            if os.path.exists(music_path):
-                pygame.mixer.music.load(resource_path(music_path))
-                pygame.mixer.music.set_volume(0.7)  # 设置音量
-                self.music_loaded = True
-                print("Background music loaded successfully")
-                if get_option("game", "music") == "off":
-                    self.stop_background_music()
-                else:
-                    self.play_background_music()
-            else:
-                print(f"Background music file not found: {music_path}")
-        except pygame.error as e:
-            print(f"Failed to load background music: {e}")
-        except Exception as e:
-            print(f"Unexpected error while loading background music: {e}")
-
-    def play_background_music(self):
-        """播放背景音乐"""
-        if self.music_loaded:
-            pygame.mixer.music.play(-1)  # -1 表示循环播放
-            self.music_playing = True
-
-    def stop_background_music(self):
-        """停止背景音乐"""
-        pygame.mixer.music.stop()
-        self.music_playing = False
-
-    def pause_background_music(self):
-        """暂停背景音乐"""
-        pygame.mixer.music.pause()
-        self.music_playing = False
-
-    def unpause_background_music(self):
-        """恢复背景音乐"""
-        pygame.mixer.music.unpause()
-        self.music_playing = True
 
     def show_menu(self):
         """显示主菜单"""
@@ -190,13 +164,6 @@ class Game:
             text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, y_offset))
             self.screen.blit(text, text_rect)
             y_offset += 30
-
-        # 音乐控制提示
-        if self.music_loaded:
-            music_status = "ON" if self.music_playing else "OFF"
-            music_text = self.font.render(f"Music: {music_status} (Press 'M' to toggle)", True, DARK_GRAY)
-            music_rect = music_text.get_rect(center=(SCREEN_WIDTH // 2, y_offset + 30))
-            self.screen.blit(music_text, music_rect)
 
         return buttons
 
@@ -277,10 +244,6 @@ class Game:
         self.score = 0
         self.effects_manager = EffectsManager()  # Reset effects manager
 
-        # 开始播放背景音乐
-        if self.music_loaded and not self.music_playing:
-            self.play_background_music()
-
     def get_current_difficulty(self):
         """获取当前难度等级"""
         if self.game_time > 60:
@@ -310,28 +273,12 @@ class Game:
                                 self.player = Player(role)
                                 self.reset_game()
                                 self.game_state = "PLAYING"
-                    elif event.type == pygame.KEYDOWN:
-                        # 音乐控制
-                        if event.key == pygame.K_m:
-                            if self.music_loaded:
-                                if self.music_playing:
-                                    self.pause_background_music()
-                                else:
-                                    if self.music_loaded:
-                                        self.unpause_background_music() if hasattr(self,
-                                                                                   'music_loaded') and self.music_loaded else self.play_background_music()
 
                 elif self.game_state == "GAME_OVER":
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_SPACE:
                             self.game_state = "MENU"
-                        # 音乐控制
-                        elif event.key == pygame.K_m:
-                            if self.music_loaded:
-                                if self.music_playing:
-                                    self.pause_background_music()
-                                else:
-                                    self.unpause_background_music()
+
 
             # 游戏逻辑更新
             self.current_scene.update()
@@ -346,15 +293,6 @@ class Game:
                 if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                     self.player.move_right()
 
-                # 音乐控制
-                if keys[pygame.K_m]:
-                    if self.music_loaded:
-                        if self.music_playing:
-                            self.pause_background_music()
-                        else:
-                            self.unpause_background_music()
-                        # 添加一个小延迟以防止重复触发
-                        pygame.time.delay(200)
 
                 # 每秒扣减2HP
                 current_time = time.time()
@@ -398,9 +336,6 @@ class Game:
                 # 检查游戏结束
                 if self.player.hp <= 0:
                     self.game_state = "GAME_OVER"
-                    # 停止背景音乐
-                    if self.music_playing:
-                        self.stop_background_music()
 
             # 绘制
             self.screen.fill(WHITE)

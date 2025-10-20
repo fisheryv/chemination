@@ -6,10 +6,6 @@ from src.game.scene import Scene
 from src.utils.tools import resource_path
 
 
-def play_action():
-    print("Play button clicked")
-
-
 class MainMenuScene(Scene):
 
     def __init__(self, parent):
@@ -27,7 +23,7 @@ class MainMenuScene(Scene):
         _x = _x + SCREEN_WIDTH // 4
         button_play = ImageButton(resource_path("assets/images/ui/menu_play.png"),
                                   _x, _y, button_width, button_height,
-                                  action=play_action)
+                                  action=self.parent.battle)
         _x = _x + SCREEN_WIDTH // 4
         button_options = ImageButton(resource_path("assets/images/ui/menu_options.png"),
                                      _x, _y, button_width, button_height,
