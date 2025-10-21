@@ -101,3 +101,12 @@ ENEMIES = {
         "speed": 2,
     }
 }
+
+ENEMIES_SPIRIT = {
+    "a1": ["HCl", "H2SO4", "HNO3", "HF"],
+    "a2": ["H3PO4", "H2CO3", "HS", "CH3COOH"],
+    "b1": ["NaOH", "KOH", "Ca(OH)2"],
+    "b2": ["Ba(OH)2", "Mg(OH)2", "NH3·H2O"],
+    "s": ["CuSO4", "AgNO3", "BaCl2"],
+    'm': ["Au", "Fe", "Cu"]
+}

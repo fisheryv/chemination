@@ -4,7 +4,6 @@ from src.config.settings import BLUE, SCREEN_WIDTH, SCREEN_HEIGHT
 from src.entities.bullet import BulletType
 from src.utils.tools import load_sprite_sheet, load_sprite_row
 
-HEROS = ["hero5", "hero6", "hero8"]
 BULLET_TYPES = [BulletType.BASE, BulletType.ACID, BulletType.METAL]
 
 
@@ -12,7 +11,7 @@ class Avatar:
     def __init__(self, hero_type):
         self.hero_type = hero_type
         # 从精灵图加载所有方向的动画帧，精灵图的顺序是下、左、上
-        self.animations = load_sprite_sheet(f"assets/images/spirits/{HEROS[self.hero_type]}.png",
+        self.animations = load_sprite_sheet(f"assets/images/spirits/hero{self.hero_type + 1}.png",
                                             3, 4, directions=["down", "left", "up"], scale=1)
         # 通过水平镜像生成向右行走帧
         direction_frames = []
@@ -20,7 +19,7 @@ class Avatar:
             direction_frames.append(pygame.transform.flip(f, True, False))
         self.animations["right"] = direction_frames
         # 攻击动画
-        self.attack = load_sprite_row(f"assets/images/spirits/{HEROS[self.hero_type]}_attack.png", 4,
+        self.attack = load_sprite_row(f"assets/images/spirits/hero{self.hero_type + 1}_attack.png", 4,
                                       scale=1)
 
 
@@ -50,7 +49,6 @@ class Hero(pygame.sprite.Sprite):
 
     def change_hero(self, hero_type):
         self.hero_type = hero_type
-        hero = HEROS[self.hero_type]
         old_center = self.rect.center
         self.current_direction = 'right'
         self.current_frame = 0
@@ -86,13 +84,13 @@ class Hero(pygame.sprite.Sprite):
         # 移动
         self.walking = False
         # if keys[K_LEFT] or keys[K_a]:
-            # self.current_direction = 'left'
-            # self.rect.x -= self.speed
-            # self.walking = True
+        # self.current_direction = 'left'
+        # self.rect.x -= self.speed
+        # self.walking = True
         # if keys[K_RIGHT] or keys[K_d]:
-            # self.current_direction = 'right'
-            # self.rect.x += self.speed
-            # self.walking = True
+        # self.current_direction = 'right'
+        # self.rect.x += self.speed
+        # self.walking = True
         if keys[K_UP] or keys[K_w]:
             self.current_direction = 'up'
             self.rect.y -= self.speed
