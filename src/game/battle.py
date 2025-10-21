@@ -15,14 +15,18 @@ from src.utils.effects import EffectsManager
 from src.utils.music import load_background_music, pause_background_music, resume_background_music
 from src.utils.tools import resource_path
 
+
 class BattleScene(Scene):
 
     def __init__(self, parent):
         super().__init__(parent)  # 调用父类的构造方法
         self.is_running = True
+        self.is_frozen = False
         self.background = pygame.image.load(resource_path("assets/images/battle/battle_bg1.jpg"))  # 背景图
         self.rip = pygame.image.load(resource_path("assets/images/ui/rip.png"))
         self.rip = pygame.transform.scale(self.rip, (30, 30))
+        self.boom = pygame.image.load(resource_path("assets/images/ui/boom.png"))
+        self.boom = pygame.transform.scale(self.boom, (30, 30))
         self.pause_button = ImageButton(resource_path("assets/images/ui/pause.png"),
                                         SCREEN_WIDTH - 120, 10, 82, 30,
                                         action=self.pause_game)
@@ -43,10 +47,19 @@ class BattleScene(Scene):
         self.rectangle.fill((255, 255, 255, 128))
 
         self.kill_count = 0
-        self.kill_count_text = self.font.render("Kill Count:" + str(self.kill_count), True, BLACK)
+        self.kill_count_text = self.font.render("Kill Count: " + str(self.kill_count), True, BLACK)
+
+        self.boom_count = 3
+        self.boom_count_text = self.font.render("x" + str(self.boom_count), True, BLACK)
+
+        # 粒子效果管理器
+        self.effects_manager = EffectsManager()
+
+        # 创建玩家
+        self.player = Hero(self)
 
         # 创建精灵组
-        self.all_sprites = pygame.sprite.Group()
+        self.all_sprites = pygame.sprite.Group(self.player)
         self.bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.ui_sprites = pygame.sprite.Group(self.pause_button)
@@ -54,23 +67,20 @@ class BattleScene(Scene):
         # 特效管理器
         self.effects_manager = EffectsManager()
 
-        # 创建玩家
-        self.player = Hero(self)
-        self.all_sprites.add(self.player)
-
         # 暂停界面
         self.overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
         self.overlay.fill((0, 0, 0, 128))
         self.pause_screen = pygame.image.load(resource_path("assets/images/ui/board.png"))
         self.start_button = ImageButton(resource_path("assets/images/ui/start.png"),
-                                        (SCREEN_WIDTH - 127) / 2, SCREEN_HEIGHT/2-20, 127, 50,
+                                        (SCREEN_WIDTH - 127) / 2, SCREEN_HEIGHT / 2 - 20, 127, 50,
                                         action=self.resume_game)
         self.stop_button = ImageButton(resource_path("assets/images/ui/stop.png"),
-                                       (SCREEN_WIDTH - 127) / 2, SCREEN_HEIGHT/2+50, 127, 50,
+                                       (SCREEN_WIDTH - 127) / 2, SCREEN_HEIGHT / 2 + 50, 127, 50,
                                        action=self.parent.main_menu)
         self.overlay_sprites = pygame.sprite.Group(self.start_button, self.stop_button)
 
         self.enemy_spawn_timer = 0
+        self.frozen_timer = 0
 
         # 加载背景音乐
         load_background_music("battle_bgm.mp3")
@@ -98,6 +108,21 @@ class BattleScene(Scene):
         enemy = Enemy(enemy_name, ENEMIES[enemy_name])
         self.all_sprites.add(enemy)
         self.enemies.add(enemy)
+        self.enemy_spawn_timer = 0
+
+    def freeze_enemy(self):
+        self.is_frozen = True
+        self.frozen_timer = 0
+        self.boom_count -= 1
+        self.boom_count_text = self.font.render("x" + str(self.boom_count), True, BLACK)
+        for e in self.enemies:
+            e.freeze()
+
+    def unfreeze_enemy(self):
+        self.is_frozen = False
+        self.frozen_timer = 0
+        for e in self.enemies:
+            e.unfreeze()
 
     def shoot(self, x, y, direction, bullet_type):
         """
@@ -108,13 +133,21 @@ class BattleScene(Scene):
         self.bullets.add(bullet)
 
     def update(self):
-        if not self.is_running: # 暂停状态停止更新
+        if not self.is_running:  # 暂停状态停止更新
             return
         # 生成敌人
-        self.enemy_spawn_timer += 1
-        if self.enemy_spawn_timer >= 300:  # 每300帧生成一个敌人
-            self.spawn_enemy()
-            self.enemy_spawn_timer = 0
+        if not self.is_frozen:
+            self.enemy_spawn_timer += 1
+            # 敌人生成速度随击杀数增加
+            _interval = 300 - self.kill_count
+            if _interval < 120:
+                _interval = 120
+            if self.enemy_spawn_timer >= _interval:
+                self.spawn_enemy()
+        else:
+            self.frozen_timer += 1
+            if self.frozen_timer >= 300:
+                self.unfreeze_enemy()
 
         # 更新精灵
         self.all_sprites.update()
@@ -146,8 +179,14 @@ class BattleScene(Scene):
         screen.blit(self.rectangle, (0, 0))
         self.hp_bar.draw(screen)
         self.mp_bar.draw(screen)
-        screen.blit(self.rip, (700, 10))
-        screen.blit(self.kill_count_text, (740, 12))
+        _x = self.mp_bar.x + self.mp_bar.width + 10
+        screen.blit(self.boom, (_x, 10))
+        _x += self.boom.get_width()
+        screen.blit(self.boom_count_text, (_x, 12))
+        _x += 60
+        screen.blit(self.rip, (_x, 10))
+        _x += self.rip.get_width() + 10
+        screen.blit(self.kill_count_text, (_x, 12))
         # 绘制所有精灵
         self.ui_sprites.draw(screen)
         self.all_sprites.draw(screen)
@@ -181,16 +220,23 @@ class BattleScene(Scene):
                 if _hero_type > 2:
                     _hero_type = 0
                 self.player.change_hero(_hero_type)
-        elif event.type == pygame.MOUSEBUTTONUP: # 敌人攻击
-            if event.button == 1: # 左键
+            elif event.key == pygame.K_x:  # 释放技能
+                if not self.is_frozen and self.boom_count > 0:
+                    self.is_frozen = True
+                    self.boom_count -= 1
+                    self.boom_count_text = self.font.render("x" + str(self.boom_count), True, BLACK)
+                    for e in self.enemies:
+                        e.freeze()
+        elif event.type == pygame.MOUSEBUTTONUP:  # 敌人攻击
+            if event.button == 1:  # 左键
                 self.player.shoot()
-            elif event.button == 3: # 右键
+            elif event.button == 3:  # 右键
                 _hero_type = self.player.hero_type
                 _hero_type += 1
                 if _hero_type > 2:
                     _hero_type = 0
                 self.player.change_hero(_hero_type)
-        elif event.type == ENEMY_ESCAPED: # 敌人逃逸
+        elif event.type == ENEMY_ESCAPED:  # 敌人逃逸
             enemy = event.dict.get('enemy', None)
             damage = event.dict.get('damage', 0)
             if enemy:
@@ -199,12 +245,17 @@ class BattleScene(Scene):
                 self.effects_manager.add_effect(0, enemy.rect.centery, 'wrong')
                 if self.hp <= 0:
                     self.parent.game_over()
-        elif event.type == ENEMY_KILLED: # 敌人击杀
+        elif event.type == ENEMY_KILLED:  # 敌人击杀
             enemy = event.dict.get('enemy', None)
             if enemy:
                 self.kill_count += 1
                 self.mp += 10
                 self.mp_bar.set_progress(self.mp)
-                self.kill_count_text = self.font.render("Kill Count:" + str(self.kill_count), True, BLACK)
+                self.kill_count_text = self.font.render("Kill Count: " + str(self.kill_count), True, BLACK)
                 self.effects_manager.add_effect(enemy.rect.x, enemy.rect.centery, 'correct')
+                if self.kill_count % 10 == 0:
+                    self.mp = 0
+                    self.mp_bar.set_progress(self.mp)
+                    self.boom_count += 1
+                    self.boom_count_text = self.font.render("x" + str(self.boom_count), True, BLACK)
         self.ui_sprites.update(event)

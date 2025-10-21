@@ -33,8 +33,17 @@ class Enemy(pygame.sprite.Sprite):
 
         font = pygame.font.SysFont(None, 24)
         self.name_surface = font.render(self.name, True, WHITE)
+        self.is_freeze = False
+
+    def freeze(self):
+        self.is_freeze = True
+
+    def unfreeze(self):
+        self.is_freeze = False
 
     def update(self):
+        if self.is_freeze:
+            return
         self.rect.x -= self.speed
 
         # 动画更新
@@ -77,4 +86,3 @@ class Enemy(pygame.sprite.Sprite):
                 }))
                 # 删除敌人
                 self.kill()
-
