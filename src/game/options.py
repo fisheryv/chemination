@@ -1,6 +1,6 @@
 import pygame
 
-from src.config.settings import WHITE, get_option
+from src.config.settings import WHITE, get_option, BLACK
 from src.entities.button import ImageButton
 from src.entities.switcher import Switcher
 from src.game.scene import Scene
@@ -11,14 +11,32 @@ option_text = [
     "Intro:"
 ]
 
+WORDS = [
+    "A chemist is not a chemist",
+    "because he does titrations",
+    "or uses a spectrometer, ",
+    "but because he thinks",
+    "chemically about the world.",
+    "         ----Roald Hoffmann",
+    "",
+    "Chemistry is, well,",
+    "chemistry is hell, ",
+    "but it opens all the doors",
+    "to all the sciences.",
+    "         ----George Hammond",
+    "",
+    "The secret of life, from",
+    "the beginning to the end,",
+    "is at its core the secret",
+    "of chemistry.",
+    "         ----Linus Pauling"
+]
 
 class OptionsScene(Scene):
 
     def __init__(self, parent):
         super().__init__(parent)  # 调用父类的构造方法
         self.background = pygame.image.load(resource_path("assets/images/ui/options_bg.jpg"))  # 背景图
-        self.img = pygame.image.load(resource_path("assets/images/ui/placeholder.jpg"))  # 装饰图
-        self.img = pygame.transform.scale(self.img, (400, 400))
         try:
             font = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 28)
         except FileNotFoundError:
@@ -28,6 +46,15 @@ class OptionsScene(Scene):
         for line in option_text:
             line_surface = font.render(line, True, WHITE)
             self.line_surfaces.append(line_surface)
+        try:
+            font = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 16)
+        except FileNotFoundError:
+            # 如果字体文件不存在，使用系统默认字体
+            font = pygame.font.SysFont(None, 28)
+        self.words_surfaces = []
+        for line in WORDS:
+            line_surface = font.render(line, True, BLACK)
+            self.words_surfaces.append(line_surface)
 
         button_width = 50
         button_height = 50
@@ -58,12 +85,16 @@ class OptionsScene(Scene):
 
     def render(self, screen):
         screen.blit(self.background, (0, 0))
-        screen.blit(self.img, (150, 120))
+        current_y = 120
+        for line_surface in self.words_surfaces:
+            line_x = 180
+            screen.blit(line_surface, (line_x, current_y))
+            current_y += line_surface.get_height() + 5
         current_y = 160
         for line_surface in self.line_surfaces:
             line_x = 830 - line_surface.get_width()
             screen.blit(line_surface, (line_x, current_y))
-            current_y += line_surface.get_height() + 70  # 5像素行间距
+            current_y += line_surface.get_height() + 70
         self.all_sprites.draw(screen)
 
     def process_input(self, event):
