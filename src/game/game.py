@@ -46,7 +46,7 @@ class Game:
         self.last_state = self.game_state
         self.game_state = SceneType.MENU
         self.current_scene = MainMenuScene(self)
-        if self.last_state == SceneType.BATTLE:
+        if self.last_state == SceneType.BATTLE or self.last_state == SceneType.GAME_OVER:
             load_background_music("bgm.mp3")
 
     def credits(self):

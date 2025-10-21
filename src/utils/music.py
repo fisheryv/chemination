@@ -15,17 +15,15 @@ def load_background_music(bgm: str):
         pygame.mixer.music.load(resource_path(music_path))
         pygame.mixer.music.set_volume(0.7)  # 设置音量
         music_loaded = True
-        print("Background music loaded successfully")
+        # 根据设置决定是否播放音乐
         if get_option("game", "music") == "off":
             stop_background_music()
         else:
             play_background_music()
     except pygame.error as e:
         music_loaded = False
-        print(f"Failed to load background music: {e}")
     except Exception as e:
         music_loaded = False
-        print(f"Unexpected error while loading background music: {e}")
 
 
 def play_background_music():

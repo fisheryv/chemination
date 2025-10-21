@@ -3,6 +3,7 @@ import pygame
 from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT
 from src.entities.button import ImageButton
 from src.game.scene import Scene
+from src.utils.music import load_background_music
 from src.utils.tools import resource_path
 
 
@@ -24,6 +25,9 @@ class GameOverScene(Scene):
         self.all_sprites = pygame.sprite.Group()
         # 将按钮添加到精灵组
         self.all_sprites.add(button_continue)
+
+        # 加载背景音乐
+        load_background_music("gameover_bgm.mp3")
 
     def update(self):
         pass
