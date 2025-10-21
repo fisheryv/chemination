@@ -52,5 +52,5 @@ class MainMenuScene(Scene):
         screen.blit(self.game_title, ((screen_width - self.game_title.get_width()) // 2, 20))
         self.all_sprites.draw(screen)
 
-    def process_input(self, event):
+    def process_input(self, event: pygame.event.Event):
         self.all_sprites.update(event)

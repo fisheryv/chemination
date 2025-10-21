@@ -13,8 +13,8 @@ class GameOverScene(Scene):
         super().__init__(parent)  # 调用父类的构造方法
         self.background = pygame.image.load(resource_path("assets/images/ui/gameover_bg.jpg"))  # 背景图
 
-        button_width = 270 * 0.6
-        button_height = 110 * 0.6
+        button_width = int(270 * 0.6)
+        button_height = int(110 * 0.6)
         _x = (SCREEN_WIDTH - button_width) // 2
         _y = SCREEN_HEIGHT - button_height - 50
         button_continue = ImageButton(resource_path("assets/images/ui/menu_continue.png"),
@@ -36,5 +36,5 @@ class GameOverScene(Scene):
         screen.blit(self.background, (0, 0))
         self.all_sprites.draw(screen)
 
-    def process_input(self, event):
+    def process_input(self, event: pygame.event.Event):
         self.all_sprites.update(event)

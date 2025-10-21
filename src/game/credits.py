@@ -58,5 +58,5 @@ class CreditsScene(Scene):
             current_y += line_surface.get_height() + (10 if i % 2 == 0 else 30)  # 5像素行间距
         self.all_sprites.draw(screen)
 
-    def process_input(self, event):
+    def process_input(self, event: pygame.event.Event):
         self.all_sprites.update(event)

@@ -94,5 +94,5 @@ class OptionsScene(Scene):
             current_y += line_surface.get_height() + 70
         self.all_sprites.draw(screen)
 
-    def process_input(self, event):
+    def process_input(self, event: pygame.event.Event):
         self.all_sprites.update(event)

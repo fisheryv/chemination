@@ -1,20 +1,22 @@
 # Chemination
 
-An educational chemistry game built with Python and Pygame where players catch falling chemical formula blocks.
+An educational chemistry game built with Python and Pygame where players strategically command heroes to ward off attacks of elemental monsters.
 
 ## Description
 
-Chemination is an educational game that helps players learn chemistry concepts through gameplay. Players choose to play as an acid, base, or salt character and must catch falling chemical formula blocks that match their character type.
+Chemination is an educational game that helps players learn chemistry concepts through gameplay. Players command three heroes - Base Knight, Acid Hitman, and Metal Elf - to defeat elemental monsters that match their attack attributes.
 
 ## Features
 
-- Over 150 chemical formulas across acids, bases, and salts
-- Progressive difficulty levels
-- HP system with automatic decay over time
-- Score tracking based on successful catches
-- Visual effects for correct/incorrect catches
-- Background music
-- Three playable character types: Acid (red), Base (blue), Salt (green)
+- Command three unique heroes: Base Knight, Acid Hitman, and Metal Elf
+- Over 20 elemental monsters across acids, bases, salts, and metals
+- Progressive difficulty with increasing monster spawn rates
+- Strategic gameplay requiring correct hero-attribute matching
+- HP system with collision and escape penalties
+- MP system for defeating monsters
+- Magic potion system: Collect 10 kills to gain a freeze skill that temporarily stops all enemies for 5 seconds
+- Visual effects for correct/incorrect encounters
+- Background music with toggle controls
 
 ## Installation
 
@@ -30,19 +32,21 @@ Chemination is an educational game that helps players learn chemistry concepts t
    ```
    python main.py
    ```
-2. Select your character (acid, base, or salt) from the main menu
-3. Use the left and right arrow keys (or A/D keys) to move your character
-4. Catch falling chemical formula blocks that match your character type:
-   - Acid character catches acid formulas
-   - Base character catches base formulas
-   - Salt character catches salt formulas
-5. Game rules:
-   - Correct catches: +5 HP, +10 points
-   - Wrong catches: -30 HP
-   - Missed blocks of your type: -20 HP
-   - Automatic HP decay: -3 HP per second
-   - Game ends when HP reaches zero
-6. Music controls:
+2. Command your heroes to defeat the elemental monsters:
+   - Base Knight (blue) defeats Acid Monsters
+   - Acid Hitman (red) defeats Base Monsters
+   - Metal Elf (green) defeats Metal-Salt Monsters
+3. Use controls to switch heroes and attack:
+   - Keyboard: Arrow keys or WASD to move/switch, Space to shoot, X for freeze skill
+   - Mouse: Left click to shoot, Right click to switch heroes, X key for freeze skill
+4. Game rules:
+   - Colliding with a monster or allowing a monster to escape deducts HP equal to the monster's remaining health
+   - If HP=0, then game over
+   - Defeating monsters grants MP
+   - Every 10 monsters defeated rewards 1 magic potion (freeze skill)
+   - Monster spawn rate increases with the number of defeated monsters
+   - Only attacks of the right attributes can defeat the monsters, so choosing the right hero is crucial
+5. Music controls:
    - Press 'M' key to toggle background music on/off
 
 ## Project Structure
@@ -50,17 +54,43 @@ Chemination is an educational game that helps players learn chemistry concepts t
 The project has been modularized for better maintainability:
 
 ```
-chemgame/
+chemination/
 ├── main.py          # Main entry point
 ├── src/             # Source code directory
+│   ├── __init__.py
 │   ├── config/      # Configuration and settings
+│   │   ├── __init__.py
+│   │   └── settings.py
 │   ├── data/        # Game data (chemical databases)
+│   │   ├── __init__.py
+│   │   └── chemicals.py
 │   ├── entities/    # Game entities (player, blocks)
-│   ├── utils/       # Utility modules (effects, HUD)
+│   │   ├── __init__.py
+│   │   ├── bullet.py
+│   │   ├── button.py
+│   │   ├── enemy.py
+│   │   ├── hero.py
+│   │   ├── processbar.py
+│   │   └── switcher.py
+│   ├── utils/       # Utility modules (effects, tools)
+│   │   ├── __init__.py
+│   │   ├── effects.py
+│   │   └── tools.py
 │   └── game/        # Main game logic
-├── audio/           # Audio files
-│   └── bgm.mp3      # Background music file
-├── images/          # Image assets
+│       ├── __init__.py
+│       ├── battle.py
+│       ├── credits.py
+│       ├── game_over.py
+│       ├── help.py
+│       ├── main_menu.py
+│       ├── options.py
+│       ├── scene.py
+│       ├── story.py
+│       └── game.py
+├── assets/          # Game assets
+│   ├── audios/      # Audio files
+│   ├── fonts/       # Font files
+│   └── images/      # Image assets
 ├── requirements.txt # Python dependencies
 └── README.md        # This file
 ```
@@ -76,9 +106,17 @@ chemgame/
 pyinstaller main.spec
 ```
 
+## Recent Improvements
+
+- Enhanced error handling with fallback graphics for missing assets
+- Improved code documentation and structure
+- Better resource management
+- Modularized code for easier maintenance
+- Enhanced game mechanics and skill system
+
 ## Credits
 
-This game was developed with Lucas Gao.
+This game was developed with **Lucas Gao**.
 
 ## License
 

@@ -67,7 +67,7 @@ class HelpScene(Scene):
         self.heros_image = [pygame.image.load(resource_path(f"assets/images/ui/hero{i + 1}.png")) for i in range(3)]
         # 从精灵图加载所有怪物图像，分类为酸1、酸2、碱1、碱2、盐
         self.animations = load_sprite_sheet("assets/images/enemy/monsters.png",
-                                            5, 4, directions=["a1", "a2", "b1", "b2", "s"], scale=1)
+                                            5, 4, directions=("a1", "a2", "b1", "b2", "s"), scale=1)
         # 将盐和碱的最后一帧添加到金属帧列表中
         metal_frame = [
             self.animations["b1"].pop(),
@@ -231,5 +231,5 @@ class HelpScene(Scene):
             self.render_role(screen)
         self.all_sprites.draw(screen)
 
-    def process_input(self, event):
+    def process_input(self, event: pygame.event.Event):
         self.all_sprites.update(event)

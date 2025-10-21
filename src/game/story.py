@@ -1,8 +1,6 @@
 import pygame
 
-from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, GOLD, WHITE
-from src.entities.button import ImageButton
-from src.entities.switcher import Switcher
+from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, GOLD
 from src.game.scene import Scene
 from src.utils.tools import resource_path
 
@@ -164,12 +162,12 @@ class StoryScene(Scene):
             self._render_text(screen)
             screen.blit(self.fade_surface, (0, 0))
 
-    def process_input(self, event):
+    def process_input(self, event: pygame.event.Event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 self.parent.main_menu()
         elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1: # 左键
+            if event.button == 1:  # 左键
                 self.next_story()
-            if event.button == 3: # 右键
+            if event.button == 3:  # 右键
                 self.parent.main_menu()

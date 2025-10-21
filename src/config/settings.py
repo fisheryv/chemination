@@ -1,10 +1,10 @@
 import configparser
 import os
-
 import pygame
 
 from src.utils.tools import resource_path
 
+# 游戏基本信息
 GAME_NAME = "Chemination"
 VERSION = "0.1.0"
 
@@ -30,9 +30,10 @@ PINK = (229, 71, 130)
 CYAN = (65, 166, 220)
 
 # 自定义事件
-ENEMY_ESCAPED = pygame.USEREVENT + 1 # 敌人逃脱事件
-ENEMY_KILLED = pygame.USEREVENT + 2  # 敌人击杀事件
+ENEMY_ESCAPED = pygame.USEREVENT + 1  # 敌人逃脱事件
+ENEMY_KILLED = pygame.USEREVENT + 2   # 敌人击杀事件
 
+# 默认设置选项
 OPTIONS = {
     "game": {
         "intro": "on",
@@ -40,7 +41,7 @@ OPTIONS = {
     }
 }
 
-# 从setting.ini文件中加载设置
+# 配置文件路径
 config_file = resource_path("setting.ini")
 config = configparser.ConfigParser()
 
@@ -64,7 +65,6 @@ def save_settings():
     try:
         with open(config_file, 'w') as f:
             config.write(f)
-        print("设置已保存")
     except Exception as e:
         print(f"保存设置时出错: {e}")
 
