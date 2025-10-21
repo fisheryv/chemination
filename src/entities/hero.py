@@ -5,7 +5,7 @@ from src.entities.bullet import BulletType
 from src.utils.tools import load_sprite_sheet, load_sprite_row
 
 HEROS = ["hero5", "hero6", "hero8"]
-BULLET_TYPES = [BulletType.ACID, BulletType.BASE, BulletType.METAL]
+BULLET_TYPES = [BulletType.BASE, BulletType.ACID, BulletType.METAL]
 
 
 class Avatar:

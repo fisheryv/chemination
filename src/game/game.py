@@ -1,11 +1,11 @@
 from enum import Enum
 
-import pygame
 import sys
 from src.config.settings import *
 from src.game.battle import BattleScene
 from src.game.credits import CreditsScene
 from src.game.game_over import GameOverScene
+from src.game.help import HelpScene
 from src.game.options import OptionsScene
 from src.game.story import StoryScene
 from src.game.main_menu import MainMenuScene
@@ -58,6 +58,11 @@ class Game:
         self.last_state = self.game_state
         self.game_state = SceneType.OPTIONS
         self.current_scene = OptionsScene(self)
+
+    def help(self):
+        self.last_state = self.game_state
+        self.game_state = SceneType.HELP
+        self.current_scene = HelpScene(self)
 
     def battle(self):
         self.last_state = self.game_state

@@ -35,7 +35,7 @@ class MainMenuScene(Scene):
 
         button_help = ImageButton(resource_path("assets/images/ui/menu_help.png"),
                                   _x, _y, button_width, button_height,
-                                  action=self.parent.game_over)
+                                  action=self.parent.help)
         _x = SCREEN_WIDTH - button_width - _x
         button_close = ImageButton(resource_path("assets/images/ui/menu_close.png"),
                                    _x, _y, button_width, button_height,
