@@ -74,22 +74,25 @@ class Hero(pygame.sprite.Sprite):
 
         # 切换角色
         if keys[K_1]:
+            self.hero_type = 0
             self.change_hero(0)
         elif keys[K_2]:
+            self.hero_type = 1
             self.change_hero(1)
         elif keys[K_3]:
+            self.hero_type = 2
             self.change_hero(2)
 
         # 移动
         self.walking = False
         # if keys[K_LEFT] or keys[K_a]:
-        #     self.current_direction = 'left'
-        #     self.rect.x -= self.speed
-        #     self.walking = True
+            # self.current_direction = 'left'
+            # self.rect.x -= self.speed
+            # self.walking = True
         # if keys[K_RIGHT] or keys[K_d]:
-        #     self.current_direction = 'right'
-        #     self.rect.x += self.speed
-        #     self.walking = True
+            # self.current_direction = 'right'
+            # self.rect.x += self.speed
+            # self.walking = True
         if keys[K_UP] or keys[K_w]:
             self.current_direction = 'up'
             self.rect.y -= self.speed

@@ -1,6 +1,8 @@
 import configparser
 import os
 
+import pygame
+
 from src.utils.tools import resource_path
 
 GAME_NAME = "Chemination"
@@ -27,12 +29,18 @@ DARK_GREEN = (0, 200, 0)
 PINK = (229, 71, 130)
 CYAN = (65, 166, 220)
 
+# 自定义事件
+ENEMY_ESCAPED = pygame.USEREVENT + 1 # 敌人逃脱事件
+ENEMY_KILLED = pygame.USEREVENT + 2  # 敌人击杀事件
+
 OPTIONS = {
     "game": {
         "intro": "on",
         "music": "on",
     }
 }
+
+# 从setting.ini文件中加载设置
 config_file = resource_path("setting.ini")
 config = configparser.ConfigParser()
 

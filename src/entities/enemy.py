@@ -4,6 +4,7 @@ import pygame
 
 from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, WHITE
 from src.entities.bullet import BulletType
+from src.config.settings import ENEMY_ESCAPED, ENEMY_KILLED
 from src.utils.tools import load_sprite_row, resource_path
 
 
@@ -43,7 +44,12 @@ class Enemy(pygame.sprite.Sprite):
         self.image = self.frames[int(self.current_frame)]
         # 如果敌人离开屏幕左侧，则删除
         if self.rect.right < 0:
-            # TODO 扣除Hero生命
+            # 触发敌人逃脱事件
+            pygame.event.post(pygame.event.Event(ENEMY_ESCAPED, {
+                'enemy': self,
+                'damage': self.health
+            }))
+            # 删除敌人
             self.kill()
 
     def draw_hp(self, screen):
@@ -54,7 +60,7 @@ class Enemy(pygame.sprite.Sprite):
         _x = self.rect.x + (self.rect.width - self.name_surface.get_width()) / 2
         screen.blit(self.name_surface, (_x, self.rect.bottom))
 
-    def take_damage(self, bullet_type) -> bool:
+    def take_damage(self, bullet_type):
         if bullet_type == BulletType.ACID:
             _damage = self.type == "metal" or self.type == "base"
         elif bullet_type == BulletType.BASE:
@@ -64,7 +70,11 @@ class Enemy(pygame.sprite.Sprite):
         if _damage:
             self.health -= 1
             if self.health <= 0:
-                # TODO 击杀数+1
+                # 触发敌人击杀事件
+                pygame.event.post(pygame.event.Event(ENEMY_KILLED, {
+                    'enemy': self,
+                    'damage': 0
+                }))
+                # 删除敌人
                 self.kill()
-                return True
-        return False
+

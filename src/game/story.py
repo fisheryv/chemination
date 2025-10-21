@@ -99,6 +99,13 @@ class StoryScene(Scene):
         self.rect_y = (SCREEN_HEIGHT - rect_height) // 2
         self.rect_x = -SCREEN_WIDTH  # 初始位置在屏幕左侧外
 
+    def next_story(self):
+        self.step += 1
+        if self.step >= len(story_book):
+            self.parent.main_menu()
+        else:
+            self.init_story(self.step)
+
     def update(self):
         if self.status == "FadeIn":
             self.fade_progress += 5
@@ -123,11 +130,7 @@ class StoryScene(Scene):
                 self.fade_progress = 0
             self.fade_surface.fill((0, 0, 0, 255 - self.fade_progress))
             if self.fade_progress == 0:
-                self.step += 1
-                if self.step >= len(story_book):
-                    self.parent.main_menu()
-                else:
-                    self.init_story(self.step)
+                self.next_story()
 
     def _render_text(self, screen):
         # 绘制矩形
@@ -164,4 +167,9 @@ class StoryScene(Scene):
     def process_input(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
+                self.parent.main_menu()
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1: # 左键
+                self.next_story()
+            if event.button == 3: # 右键
                 self.parent.main_menu()

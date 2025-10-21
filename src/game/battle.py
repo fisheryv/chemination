@@ -2,7 +2,8 @@ import random
 
 import pygame
 
-from src.config.settings import PINK, WHITE, CYAN, SCREEN_WIDTH, BLACK, SCREEN_HEIGHT, GREEN, RED
+from src.config.settings import PINK, WHITE, CYAN, SCREEN_WIDTH, BLACK, SCREEN_HEIGHT, GREEN, RED, ENEMY_ESCAPED, \
+    ENEMY_KILLED
 from src.data.chemicals import ENEMIES
 from src.entities.bullet import Bullet
 from src.entities.button import ImageButton
@@ -13,7 +14,6 @@ from src.game.scene import Scene
 from src.utils.effects import EffectsManager
 from src.utils.music import load_background_music, pause_background_music, resume_background_music
 from src.utils.tools import resource_path
-
 
 class BattleScene(Scene):
 
@@ -77,10 +77,16 @@ class BattleScene(Scene):
         # play_background_music()
 
     def pause_game(self):
+        """
+        暂停游戏
+        """
         self.is_running = False
         pause_background_music()
 
     def resume_game(self):
+        """
+        恢复游戏
+        """
         self.is_running = True
         resume_background_music()
 
@@ -94,12 +100,15 @@ class BattleScene(Scene):
         self.enemies.add(enemy)
 
     def shoot(self, x, y, direction, bullet_type):
+        """
+        发射子弹
+        """
         bullet = Bullet(x, y, direction, bullet_type)
         self.all_sprites.add(bullet)
         self.bullets.add(bullet)
 
     def update(self):
-        if not self.is_running:
+        if not self.is_running: # 暂停状态停止更新
             return
         # 生成敌人
         self.enemy_spawn_timer += 1
@@ -110,15 +119,22 @@ class BattleScene(Scene):
         # 更新精灵
         self.all_sprites.update()
 
+        # 检测玩家与敌人之间的碰撞
+        hits = pygame.sprite.spritecollide(self.player, self.enemies, False)
+        for hit in hits:
+            self.hp -= hit.health
+            if self.hp <= 0:
+                self.parent.game_over()
+            self.hp_bar.set_progress(self.hp)
+            self.effects_manager.add_effect(hit.rect.x, hit.rect.centery, 'wrong')
+            # 删除敌人
+            hit.kill()
+
         # 碰撞检测：子弹与敌人
         hits = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False)
         for bullet, enemy_list in hits.items():
             for enemy in enemy_list:
-                is_killed = enemy.take_damage(bullet.bullet_type)
-                if is_killed:
-                    self.kill_count += 1
-                    self.kill_count_text = self.font.render("Kill Count:" + str(self.kill_count), True, BLACK)
-                    self.effects_manager.add_effect(enemy.rect.x, enemy.rect.centery, 'correct')
+                enemy.take_damage(bullet.bullet_type)
 
         # 更新特效
         self.effects_manager.update_effects()
@@ -152,4 +168,43 @@ class BattleScene(Scene):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 self.player.shoot()
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT:
+                _hero_type = self.player.hero_type
+                _hero_type -= 1
+                if _hero_type < 0:
+                    _hero_type = 2
+                self.player.change_hero(_hero_type)
+            elif event.key == pygame.K_RIGHT:
+                _hero_type = self.player.hero_type
+                _hero_type += 1
+                if _hero_type > 2:
+                    _hero_type = 0
+                self.player.change_hero(_hero_type)
+        elif event.type == pygame.MOUSEBUTTONUP: # 敌人攻击
+            if event.button == 1: # 左键
+                self.player.shoot()
+            elif event.button == 3: # 右键
+                _hero_type = self.player.hero_type
+                _hero_type += 1
+                if _hero_type > 2:
+                    _hero_type = 0
+                self.player.change_hero(_hero_type)
+        elif event.type == ENEMY_ESCAPED: # 敌人逃逸
+            enemy = event.dict.get('enemy', None)
+            damage = event.dict.get('damage', 0)
+            if enemy:
+                self.hp -= damage
+                self.hp_bar.set_progress(self.hp)
+                self.effects_manager.add_effect(0, enemy.rect.centery, 'wrong')
+                if self.hp <= 0:
+                    self.parent.game_over()
+        elif event.type == ENEMY_KILLED: # 敌人击杀
+            enemy = event.dict.get('enemy', None)
+            if enemy:
+                self.kill_count += 1
+                self.mp += 10
+                self.mp_bar.set_progress(self.mp)
+                self.kill_count_text = self.font.render("Kill Count:" + str(self.kill_count), True, BLACK)
+                self.effects_manager.add_effect(enemy.rect.x, enemy.rect.centery, 'correct')
         self.ui_sprites.update(event)
