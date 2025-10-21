@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-from src.config.settings import BLUE, SCREEN_WIDTH, SCREEN_HEIGHT
+from src.config.settings import SCREEN_HEIGHT
 from src.entities.bullet import BulletType
 from src.utils.tools import load_sprite_sheet, load_sprite_row
 

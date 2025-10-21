@@ -2,8 +2,8 @@ from enum import Enum
 
 import pygame
 
-from src.config.settings import GREEN, SCREEN_WIDTH
-from src.utils.tools import load_sprite_sheet, load_sprite_row
+from src.config.settings import SCREEN_WIDTH
+from src.utils.tools import load_sprite_row
 
 
 class BulletType(Enum):

@@ -35,10 +35,8 @@ class CreditsScene(Scene):
                 line_surface = font2.render(line, True, WHITE)
             self.line_surfaces.append(line_surface)
 
-        button_width = 50
-        button_height = 50
-        _x = 20
-        _y = 30
+        button_width, button_height = 50, 50
+        _x, _y = 20, 30
         button_back = ImageButton(resource_path("assets/images/ui/back_arrow.png"),
                                   _x, _y, button_width, button_height,
                                   action=self.parent.main_menu)

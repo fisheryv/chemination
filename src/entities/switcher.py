@@ -40,6 +40,11 @@ class Switcher(pygame.sprite.Sprite):
         self.hover_image_off = create_alpha_image(self.original_image_off, hover_alpha)
         self.click_image_off = create_alpha_image(self.original_image_off, click_alpha)
 
+        self.normal_image = None
+        self.hover_image = None
+        self.click_image = None
+        self.image: pygame.Surface
+
         # 按钮状态
         self.is_hovered = False
         self.is_clicked = False

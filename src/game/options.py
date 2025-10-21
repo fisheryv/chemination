@@ -32,6 +32,7 @@ WORDS = [
     "         ----Linus Pauling"
 ]
 
+
 class OptionsScene(Scene):
 
     def __init__(self, parent):
@@ -56,22 +57,18 @@ class OptionsScene(Scene):
             line_surface = font.render(line, True, BLACK)
             self.words_surfaces.append(line_surface)
 
-        button_width = 50
-        button_height = 50
-        _x = 20
-        _y = 30
+        button_width, button_height = 50, 50
+        _x, _y = 20, 30
         button_back = ImageButton(resource_path("assets/images/ui/back_arrow.png"),
                                   _x, _y, button_width, button_height,
                                   action=self.parent.main_menu)
-        button_width = 127
-        button_height = 60
-        _x = 850
-        _y = 150
+        button_width, button_height = 127, 60
+        _x, _y = 850, 150
         _initial_state = get_option("game", "music") == "on"
         music_switcher = Switcher(_x, _y, button_width, button_height, initial_state=_initial_state,
                                   action=self.parent.music_toggle)
 
-        _y = _y + 100
+        _y += 100
         _initial_state = get_option("game", "intro") == "on"
         intro_switcher = Switcher(_x, _y, button_width, button_height, initial_state=_initial_state,
                                   action=self.parent.intro_toggle)

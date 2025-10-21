@@ -19,9 +19,9 @@ class EffectsManager:
         # 生成粒子
         for i in range(10):
             particle = {
-                'dx': random.uniform(-5, 5),
-                'dy': random.uniform(-5, 5),
-                'size': random.randint(3, 8)
+                'dx': random.uniform(-8, 8),
+                'dy': random.uniform(-8, 8),
+                'size': random.randint(5, 10)
             }
             effect['particles'].append(particle)
         

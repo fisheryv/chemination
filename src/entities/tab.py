@@ -1,6 +1,5 @@
 import pygame
 
-from src.config.settings import WHITE
 from src.utils.tools import create_alpha_image
 
 

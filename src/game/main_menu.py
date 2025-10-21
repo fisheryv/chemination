@@ -28,10 +28,8 @@ class MainMenuScene(Scene):
         button_options = ImageButton(resource_path("assets/images/ui/menu_options.png"),
                                      _x, _y, button_width, button_height,
                                      action=self.parent.options)
-        button_width = 50
-        button_height = 50
-        _x = 60
-        _y = 50
+        button_width, button_height = 50, 50
+        _x, _y = 60, 50
 
         button_help = ImageButton(resource_path("assets/images/ui/menu_help.png"),
                                   _x, _y, button_width, button_height,

@@ -1,7 +1,6 @@
 import pygame
-import sys
 
-from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, GAME_NAME, load_settings, get_option
+from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, GAME_NAME, load_settings
 from src.utils.tools import resource_path
 
 
@@ -24,6 +23,7 @@ def main():
     game = Game(screen)
     print("Game instance created")
     game.run()
+
 
 if __name__ == "__main__":
     main()
