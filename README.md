@@ -1,4 +1,7 @@
-# Chemination
+<div align="center">
+<img src="assets/images/ui/game_title.png" width="120" height="120" />
+<h1>Chemination</h1>
+</div>
 
 An educational chemistry game built with Python and Pygame where players strategically command heroes to defend against elemental monsters. 
 
@@ -28,8 +31,8 @@ Chemination is an educational game that helps players learn chemistry concepts t
 - Strategic gameplay requiring correct hero-attribute matching
 - HP system with collision and escape penalties
 - MP system for defeating monsters
-- Magic potion system: Collect 10 kills to gain a freeze skill that temporarily stops all enemies for 5 seconds
-- Visual effects for correct/incorrect encounters
+- Magic potion system
+- Particle effects for killing monsters and taking damage
 - Background music with toggle controls
 
 ## Todo
@@ -146,7 +149,7 @@ nuitka --standalone --onefile \
   --windows-icon-from-ico=icon.ico \
   --remove-output \
   main.py
-```   
+```
 
 ## Recent Improvements
 
