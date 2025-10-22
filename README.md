@@ -1,13 +1,27 @@
 # Chemination
 
-An educational chemistry game built with Python and Pygame where players strategically command heroes to ward off attacks of elemental monsters.
+An educational chemistry game built with Python and Pygame where players strategically command heroes to defend against elemental monsters. 
+
+> This game originated from my Y10 Chemistry Course Project.
 
 ## Description
 
 Chemination is an educational game that helps players learn chemistry concepts through gameplay. Players command three heroes - Base Knight, Acid Hitman, and Metal Elf - to defeat elemental monsters that match their attack attributes.
 
+## Screen Shots
+
+|              Intro              |                Main Menu                |             Help              |
+|:-------------------------------:|:---------------------------------------:|:-----------------------------:|
+| ![Intro](screenshots/intro.png) | ![Main Menu](screenshots/main_menu.png) | ![Help](screenshots/help.png) |
+
+|              Battle              |                Monsters                 |              Game Over              |
+|:--------------------------------:|:---------------------------------------:|:-----------------------------------:|
+| ![Intro](screenshots/battle.png) | ![Main Menu](screenshots/monstrers.png) | ![Help](screenshots/game_over.png)  |
+
 ## Features
 
+- Pixel-art style visuals
+- Easy to learn, hard to master
 - Command three unique heroes: Base Knight, Acid Hitman, and Metal Elf
 - Over 20 elemental monsters across acids, bases, salts, and metals
 - Progressive difficulty with increasing monster spawn rates
@@ -64,7 +78,7 @@ chemination/
 │   ├── data/        # Game data (chemical databases)
 │   │   ├── __init__.py
 │   │   └── chemicals.py
-│   ├── entities/    # Game entities (player, blocks)
+│   ├── entities/    # Game entities (player, ui blocks etc.)
 │   │   ├── __init__.py
 │   │   ├── bullet.py
 │   │   ├── button.py
@@ -102,9 +116,23 @@ chemination/
 
 ## Packaging
 
+**PyInstaller** 
+
 ```bash
 pyinstaller main.spec
 ```
+
+**Nuitka**
+
+```bash
+nuitka --standalone --onefile \
+  --include-data-files=./icon.ico=icon.ico \
+  --include-data-dir=./assets=assets \
+  --output-dir=out \
+  --windows-icon-from-ico=icon.ico \
+  --remove-output \
+  main.py
+```   
 
 ## Recent Improvements
 
