@@ -8,7 +8,8 @@ from src.utils.tools import load_sprite_row, resource_path
 
 class Enemy(pygame.sprite.Sprite):
     """敌人类"""
-    def __init__(self, name, params):
+
+    def __init__(self, name: str, params: dict):
         """
         初始化敌人
         
@@ -19,7 +20,7 @@ class Enemy(pygame.sprite.Sprite):
         super().__init__()
         self.name = name
         self.params = params
-        
+
         # 加载敌人动画帧
         try:
             self.frames = load_sprite_row(f"assets/images/enemy/{name}.png", 4, scale=1)
@@ -27,7 +28,7 @@ class Enemy(pygame.sprite.Sprite):
             # 如果无法加载图片，创建一个默认的矩形作为替代
             self.frames = [pygame.Surface((50, 50), pygame.SRCALPHA)]
             self.frames[0].fill((200, 100, 100, 200))
-        
+
         # 加载血量图标
         try:
             self.heart1 = pygame.image.load(resource_path("assets/images/ui/heart1.png"))
@@ -57,7 +58,7 @@ class Enemy(pygame.sprite.Sprite):
         # 渲染敌人名称
         font = pygame.font.SysFont(None, 24)
         self.name_surface = font.render(self.name, True, WHITE)
-        
+
         # 冻结状态
         self.is_freeze = False
 
@@ -74,7 +75,7 @@ class Enemy(pygame.sprite.Sprite):
         # 如果被冻结，不更新位置
         if self.is_freeze:
             return
-            
+
         # 更新位置
         self.rect.x -= self.speed
 
@@ -83,7 +84,7 @@ class Enemy(pygame.sprite.Sprite):
         if self.current_frame >= len(self.frames):
             self.current_frame = 0
         self.image = self.frames[int(self.current_frame)]
-        
+
         # 边界检查：如果敌人离开屏幕左侧，则触发逃脱事件并删除
         if self.rect.right < 0:
             # 触发敌人逃脱事件
@@ -94,7 +95,7 @@ class Enemy(pygame.sprite.Sprite):
             # 删除敌人
             self.kill()
 
-    def draw_hp(self, screen):
+    def draw_hp(self, screen: pygame.Surface):
         """
         绘制敌人血量
         
@@ -106,12 +107,12 @@ class Enemy(pygame.sprite.Sprite):
         for i in range(self.params["hp"]):
             heart_image = self.heart3 if i < self.health else self.heart1
             screen.blit(heart_image, (_x + i * self.heart3.get_width(), self.rect.y - self.heart3.get_height()))
-        
+
         # 绘制敌人名称
         _x = self.rect.x + (self.rect.width - self.name_surface.get_width()) / 2
         screen.blit(self.name_surface, (_x, self.rect.bottom))
 
-    def take_damage(self, bullet_type):
+    def take_damage(self, bullet_type: BulletType):
         """
         敌人受到伤害
         
@@ -125,7 +126,7 @@ class Enemy(pygame.sprite.Sprite):
             _damage = self.type == "acid"
         else:  # BulletType.METAL
             _damage = self.type == "salt"
-            
+
         # 如果受到伤害，减少血量
         if _damage:
             self.health -= 1

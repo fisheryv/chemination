@@ -46,7 +46,7 @@ class MainMenuScene(Scene):
     def update(self):
         pass
 
-    def render(self, screen):
+    def render(self, screen: pygame.Surface):
         screen_width, screen_height = screen.get_size()
         screen.blit(self.background, (0, 0))
         screen.blit(self.game_title, ((screen_width - self.game_title.get_width()) // 2, 20))

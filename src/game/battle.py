@@ -3,10 +3,10 @@ import pygame
 
 from src.config.settings import (
     PINK, WHITE, CYAN, SCREEN_WIDTH, BLACK, SCREEN_HEIGHT,
-    GREEN, RED, ENEMY_ESCAPED, ENEMY_KILLED
+    ENEMY_ESCAPED, ENEMY_KILLED, HERO_ATTACK, RED,  GREEN
 )
 from src.data.chemicals import ENEMIES
-from src.entities.bullet import Bullet
+from src.entities.bullet import Bullet, BulletType
 from src.entities.button import ImageButton
 from src.entities.enemy import Enemy
 from src.entities.hero import Hero
@@ -123,7 +123,7 @@ class BattleScene(Scene):
     def _init_sprites(self):
         """初始化精灵组"""
         # 创建玩家
-        self.player = Hero(self)
+        self.player = Hero()
 
         # 创建精灵组
         self.all_sprites = pygame.sprite.Group(self.player)
@@ -192,7 +192,7 @@ class BattleScene(Scene):
         for e in self.enemies:
             e.unfreeze()
 
-    def shoot(self, x, y, direction, bullet_type):
+    def shoot(self, x: int, y: int, direction: int, bullet_type: BulletType):
         """
         发射子弹
         
@@ -235,7 +235,7 @@ class BattleScene(Scene):
             if self.hp <= 0:
                 self.parent.game_over()
             self.hp_bar.set_progress(self.hp)
-            self.effects_manager.add_effect(hit.rect.x, hit.rect.centery, 'wrong')
+            self.effects_manager.add_effect(hit.rect.x, hit.rect.centery, RED)
             # 删除敌人
             hit.kill()
 
@@ -248,7 +248,7 @@ class BattleScene(Scene):
         # 更新特效
         self.effects_manager.update_effects()
 
-    def render(self, screen):
+    def render(self, screen: pygame.Surface):
         """
         渲染游戏画面
         
@@ -282,7 +282,7 @@ class BattleScene(Scene):
             e.draw_hp(screen)
 
         # 绘制特效
-        self.effects_manager.draw_effects(screen, GREEN, RED)
+        self.effects_manager.draw_effects(screen)
 
         # 绘制暂停界面
         if not self.is_running:
@@ -329,13 +329,15 @@ class BattleScene(Scene):
                 self.player.change_hero(hero_type)
 
         # 处理自定义事件
+        elif event.type == HERO_ATTACK:
+            self.shoot(**event.dict)
         elif event.type == ENEMY_ESCAPED:  # 敌人逃逸
             enemy = event.dict.get('enemy', None)
             damage = event.dict.get('damage', 0)
             if enemy:
                 self.hp -= damage
                 self.hp_bar.set_progress(self.hp)
-                self.effects_manager.add_effect(0, enemy.rect.centery, 'wrong')
+                self.effects_manager.add_effect(0, enemy.rect.centery, RED)
                 if self.hp <= 0:
                     self.parent.game_over()
 
@@ -346,7 +348,7 @@ class BattleScene(Scene):
                 self.mp += 10
                 self.mp_bar.set_progress(self.mp)
                 self.kill_count_text = self.font.render("Kill Count: " + str(self.kill_count), True, BLACK)
-                self.effects_manager.add_effect(enemy.rect.x, enemy.rect.centery, 'correct')
+                self.effects_manager.add_effect(enemy.rect.x, enemy.rect.centery, GREEN)
 
                 # 每击杀10个敌人获得一个技能点
                 if self.kill_count % 10 == 0:

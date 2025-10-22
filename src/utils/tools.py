@@ -3,6 +3,7 @@ import sys
 
 import pygame
 from pygame import BLEND_RGBA_MULT
+from pathlib import Path
 
 
 def create_alpha_image(image, alpha):
@@ -21,7 +22,7 @@ def create_alpha_image(image, alpha):
     return alpha_image
 
 
-def resource_path(relative_path):
+def resource_path(relative_path: str):
     """
     获取资源的绝对路径，兼容开发环境和打包后环境
     
@@ -31,16 +32,24 @@ def resource_path(relative_path):
     Returns:
         str: 资源的绝对路径
     """
-    try:
+    if hasattr(sys, '_MEIPASS'):
         # PyInstaller 创建临时文件夹，将路径存储在 _MEIPASS 中
         base_path = sys._MEIPASS
-    except AttributeError:
+        print("_MEIPASS = " + base_path)
+    elif __file__ is not None:
+        # In Nuitka onefile mode, __file__ for the main module points to the temporary extraction location.
+        current_path = Path(__file__).resolve()
+        parent_path = current_path.parent
+        base_path = parent_path.parent.parent
+    else:
         base_path = os.path.abspath(".")
 
     return os.path.join(base_path, relative_path)
 
 
-def load_sprite_sheet(filename, rows, cols, directions=('down', 'left', 'right', 'up'), scale=1):
+def load_sprite_sheet(filename: str, rows: int, cols: int,
+                      directions: tuple = ('down', 'left', 'right', 'up'),
+                      scale: float = 1.0) -> dict[str, list[pygame.Surface]]:
     """
     从精灵图中加载并分割所有帧（多行精灵图）
     
@@ -62,7 +71,7 @@ def load_sprite_sheet(filename, rows, cols, directions=('down', 'left', 'right',
         # 创建一个简单的替代精灵图
         sprite_sheet = pygame.Surface((cols * 50, rows * 50), pygame.SRCALPHA)
         sprite_sheet.fill((200, 100, 100, 200))
-    
+
     frame_width = sprite_sheet.get_width() // cols
     frame_height = sprite_sheet.get_height() // rows
 
@@ -79,14 +88,14 @@ def load_sprite_sheet(filename, rows, cols, directions=('down', 'left', 'right',
                 # 如果子表面超出范围，创建一个默认帧
                 frame = pygame.Surface((frame_width, frame_height), pygame.SRCALPHA)
                 frame.fill((100, 200, 100, 200))
-                
+
             # 缩放帧
             if scale != 1:
                 new_width = int(frame_width * scale)
                 new_height = int(frame_height * scale)
                 frame = pygame.transform.scale(frame, (new_width, new_height))
             direction_frames.append(frame)
-            
+
         # 确保方向标签不超出范围
         direction_key = directions[row] if row < len(directions) else f"direction_{row}"
         frames[direction_key] = direction_frames
@@ -94,7 +103,7 @@ def load_sprite_sheet(filename, rows, cols, directions=('down', 'left', 'right',
     return frames
 
 
-def load_sprite_row(filename, cols, scale=1):
+def load_sprite_row(filename: str, cols: int, scale: float = 1.0) -> list[pygame.Surface]:
     """
     从精灵图中加载并分割所有帧（单行精灵图）
     
@@ -114,7 +123,7 @@ def load_sprite_row(filename, cols, scale=1):
         # 创建一个简单的替代精灵图
         sprite_sheet = pygame.Surface((cols * 50, 50), pygame.SRCALPHA)
         sprite_sheet.fill((100, 100, 200, 200))
-    
+
     frame_width = sprite_sheet.get_width() // cols
     frame_height = sprite_sheet.get_height()
 
@@ -128,12 +137,12 @@ def load_sprite_row(filename, cols, scale=1):
             # 如果子表面超出范围，创建一个默认帧
             frame = pygame.Surface((frame_width, frame_height), pygame.SRCALPHA)
             frame.fill((100, 200, 100, 200))
-            
+
         # 缩放帧
         if scale != 1:
             new_width = int(frame_width * scale)
             new_height = int(frame_height * scale)
             frame = pygame.transform.scale(frame, (new_width, new_height))
         direction_frames.append(frame)
-        
+
     return direction_frames

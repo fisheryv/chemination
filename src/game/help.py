@@ -154,7 +154,7 @@ class HelpScene(Scene):
     def update(self):
         pass
 
-    def render_rule(self, screen):
+    def render_rule(self, screen: pygame.Surface):
         _x, _y = 150, 160
         if self.line_surfaces_left:
             for line_surface in self.line_surfaces_left:
@@ -170,13 +170,13 @@ class HelpScene(Scene):
                 screen.blit(line_surface, (_x, _y))
                 _y += line_surface.get_height() + 4  # 5像素行间距
 
-    def render_control(self, screen):
+    def render_control(self, screen: pygame.Surface):
         _x, _y = 150 + (400 - self.control_left.get_width()) / 2, 160
         screen.blit(self.control_left, (_x, _y))
         _x, _y = 650 + (400 - self.control_right.get_width()) / 2, 220
         screen.blit(self.control_right, (_x, _y))
 
-    def _render_monsters(self, screen, x, y, frames, names):
+    def _render_monsters(self, screen: pygame.Surface, x: int, y: int, frames: list[pygame.Surface], names: list[str]):
         x += 100 * (4 - len(frames)) / 2
         for i, f in enumerate(frames):
             screen.blit(f, (x, y))
@@ -189,7 +189,8 @@ class HelpScene(Scene):
                 screen.blit(self.heart, (_x + k * self.heart.get_width(), y - self.heart.get_height()))
             x += 100
 
-    def _render_monster_group(self, screen, x, y, title, color, group_names):
+    def _render_monster_group(self, screen: pygame.Surface, x: int, y: int, title: str, color: tuple,
+                              group_names: list[str]):
         _title = self.font_subtitle.render(title, True, color)
         _x, _y = x + (400 - _title.get_width()) / 2, y
         screen.blit(_title, (_x, _y))
@@ -200,7 +201,7 @@ class HelpScene(Scene):
             self._render_monsters(screen, _x, _y, _frames, _names)
             _x, _y = x + 10, _y + 130
 
-    def render_role(self, screen):
+    def render_role(self, screen: pygame.Surface):
         # render acid monsters
         self._render_monster_group(screen, 150, 100, "Acid Monsters", DARK_RED, ["a1", "a2"])
 
@@ -213,7 +214,7 @@ class HelpScene(Scene):
         # render metal monsters
         self._render_monster_group(screen, 650, 420, "Metal Monsters", DARK_GRAY, ["m"])
 
-    def render(self, screen):
+    def render(self, screen: pygame.Surface):
         screen.blit(self.background, (0, 0))
         if self.title_surface_left:
             _x = 150 + (400 - self.title_surface_left.get_width()) / 2

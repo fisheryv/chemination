@@ -72,7 +72,7 @@ class StoryScene(Scene):
         self.status = "FadeIn"
         self.init_story()
 
-    def init_story(self, step=0):
+    def init_story(self, step: int = 0):
         self.show_count = 0
         self.story = story_book[step]
         bg = resource_path("assets/images/story/" + self.story['bg'])
@@ -130,7 +130,7 @@ class StoryScene(Scene):
             if self.fade_progress == 0:
                 self.next_story()
 
-    def _render_text(self, screen):
+    def _render_text(self, screen: pygame.Surface):
         # 绘制矩形
         screen.blit(self.rectangle, (self.rect_x, self.rect_y))
 
@@ -141,7 +141,7 @@ class StoryScene(Scene):
             screen.blit(line_surface, (line_x, current_y))
             current_y += line_surface.get_height() + 5  # 5像素行间距
 
-    def render(self, screen):
+    def render(self, screen: pygame.Surface):
         """
         绘制故事场景动画
         1. 背景淡入

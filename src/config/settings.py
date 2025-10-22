@@ -31,7 +31,8 @@ CYAN = (65, 166, 220)
 
 # 自定义事件
 ENEMY_ESCAPED = pygame.USEREVENT + 1  # 敌人逃脱事件
-ENEMY_KILLED = pygame.USEREVENT + 2   # 敌人击杀事件
+ENEMY_KILLED = pygame.USEREVENT + 2  # 敌人击杀事件
+HERO_ATTACK = pygame.USEREVENT + 3  # 英雄攻击事件
 
 # 默认设置选项
 OPTIONS = {
@@ -69,7 +70,7 @@ def save_settings():
         print(f"保存设置时出错: {e}")
 
 
-def get_option(section, key):
+def get_option(section: str, key: str) -> str | None:
     """获取设置值"""
     try:
         return config.get(section, key)
@@ -77,7 +78,7 @@ def get_option(section, key):
         return None
 
 
-def set_option(section, key, value):
+def set_option(section: str, key: str, value):
     """设置值"""
     if section not in config:
         config[section] = {}

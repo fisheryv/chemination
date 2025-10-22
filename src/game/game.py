@@ -25,7 +25,7 @@ class SceneType(Enum):
 class Game:
     """游戏主类"""
 
-    def __init__(self, screen):
+    def __init__(self, screen: pygame.Surface):
         self.screen = screen
         self.clock = pygame.time.Clock()
         self.running = True

@@ -15,8 +15,8 @@ def main():
         # 设置窗口图标
         icon = pygame.image.load(resource_path("icon.ico"))
         pygame.display.set_icon(icon)
-    except pygame.error:
-        print("警告: 无法加载图标文件 icon.ico")
+    except Exception as e:
+        print("警告: 无法加载图标文件 icon.ico", e)
     
     # 创建游戏窗口
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))

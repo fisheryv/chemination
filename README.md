@@ -5,7 +5,7 @@
 
 An educational chemistry game built with Python and Pygame where players strategically command heroes to defend against elemental monsters. 
 
-> This game originated from my Y10 Chemistry Course Project.
+> Chemination = **Chem**istry + Elim**ination**, which originated from my Y10 Chemistry Course Project.
 
 ## Description
 
@@ -148,6 +148,7 @@ nuitka --standalone --onefile \
   --output-dir=out \
   --windows-icon-from-ico=icon.ico \
   --remove-output \
+  --windows-disable-console\
   main.py
 ```
 

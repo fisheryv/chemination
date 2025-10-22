@@ -1,12 +1,15 @@
+from typing import Optional
+
 import pygame
 
 from src.utils.tools import create_alpha_image, resource_path
 
 
 class Switcher(pygame.sprite.Sprite):
-    def __init__(self, x, y,
-                 width=None, height=None, initial_state=False,
-                 hover_alpha=220, click_alpha=180, action=None):
+    def __init__(self, x: int, y: int,
+                 width: Optional[int] = None, height: Optional[int] = None,
+                 initial_state: bool = False,
+                 hover_alpha: int = 220, click_alpha: int = 180, action=None):
         """
         切换按钮类初始化
 
@@ -23,6 +26,7 @@ class Switcher(pygame.sprite.Sprite):
         super().__init__()
 
         # 加载并处理图片
+        self.image: Optional[pygame.Surface] = None
         self.original_image_on = pygame.image.load(resource_path("assets/images/ui/switcher_on.png")).convert_alpha()
         self.original_image_off = pygame.image.load(resource_path("assets/images/ui/switcher_off.png")).convert_alpha()
 
@@ -43,7 +47,6 @@ class Switcher(pygame.sprite.Sprite):
         self.normal_image = None
         self.hover_image = None
         self.click_image = None
-        self.image: pygame.Surface
 
         # 按钮状态
         self.is_hovered = False
@@ -78,7 +81,7 @@ class Switcher(pygame.sprite.Sprite):
         else:
             self.image = self.normal_image
 
-    def update(self, event):
+    def update(self, event: pygame.event.Event):
         """更新按钮状态"""
         mouse_pos = pygame.mouse.get_pos()
         self.is_hovered = self.rect.collidepoint(mouse_pos)
@@ -102,13 +105,11 @@ class Switcher(pygame.sprite.Sprite):
         # 更新图像
         self.update_image()
 
+    def get_state(self) -> bool:
+        """获取当前状态"""
+        return self.state
 
-def get_state(self):
-    """获取当前状态"""
-    return self.state
-
-
-def set_state(self, state):
-    """设置状态"""
-    self.state = state
-    self.update_image()
+    def set_state(self, state: bool):
+        """设置状态"""
+        self.state = state
+        self.update_image()

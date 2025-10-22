@@ -49,7 +49,7 @@ class CreditsScene(Scene):
     def update(self):
         pass
 
-    def render(self, screen):
+    def render(self, screen: pygame.Surface):
         screen.blit(self.background, (0, 0))
         current_y = 80
         for i, line_surface in enumerate(self.line_surfaces):

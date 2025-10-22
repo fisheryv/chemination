@@ -14,7 +14,8 @@ class BulletType(Enum):
 
 class Bullet(pygame.sprite.Sprite):
     """子弹类"""
-    def __init__(self, x, y, direction, bullet_type):
+
+    def __init__(self, x: int, y: int, direction: int, bullet_type: BulletType):
         """
         初始化子弹
         
@@ -26,25 +27,25 @@ class Bullet(pygame.sprite.Sprite):
         """
         super().__init__()
         self.bullet_type = bullet_type
-        
+
         # 加载子弹动画帧
         self.frames = load_sprite_row(
-            f"assets/images/spirits/{self.bullet_type.value}.png", 
-            3, 
+            f"assets/images/spirits/{self.bullet_type.value}.png",
+            3,
             scale=1
         )
-        
+
         # 动画相关属性
         self.current_frame = 0
         self.animation_speed = 0.3
         self.image = self.frames[self.current_frame]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        
+
         # 物理属性
         self.speed = 10
         self.direction = direction
-        
+
         # 根据方向翻转图像
         if self.direction == -1:
             self.image = pygame.transform.flip(self.image, True, False)

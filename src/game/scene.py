@@ -16,5 +16,5 @@ class Scene(ABC):
         pass
 
     @abstractmethod
-    def render(self, screen):
+    def render(self, screen: pygame.Surface):
         pass

@@ -1,11 +1,14 @@
+from typing import Optional
+
 import pygame
 
 from src.utils.tools import create_alpha_image
 
 
 class TabButton(pygame.sprite.Sprite):
-    def __init__(self, image_path1, image_path2, x, y, width=None, height=None,
-                 hover_alpha=220, action=None):
+    def __init__(self, image_path1: str, image_path2: str, x: int, y: int,
+                 width: Optional[int] = None, height: Optional[int] = None,
+                 hover_alpha: int = 220, action=None):
         """
         图片按钮类初始化
 
@@ -66,7 +69,7 @@ class TabButton(pygame.sprite.Sprite):
         self.is_clicked = clicked
         self.update_image()
 
-    def update(self, event):
+    def update(self, event: pygame.event.Event):
         """更新按钮状态"""
         mouse_pos = pygame.mouse.get_pos()
         self.is_hovered = self.rect.collidepoint(mouse_pos)

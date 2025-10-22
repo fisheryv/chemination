@@ -32,7 +32,7 @@ class GameOverScene(Scene):
     def update(self):
         pass
 
-    def render(self, screen):
+    def render(self, screen: pygame.Surface):
         screen.blit(self.background, (0, 0))
         self.all_sprites.draw(screen)
 

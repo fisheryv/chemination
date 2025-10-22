@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pygame
 from src.utils.tools import resource_path
 
@@ -5,7 +7,8 @@ from src.utils.tools import resource_path
 class ProcessBar:
     """进度条组件"""
 
-    def __init__(self, x, y, width, height, border_color, bg_color, icon=None):
+    def __init__(self, x: int, y: int, width: int, height: int, border_color: tuple, bg_color: tuple,
+                 icon: Optional[str] = None):
         self.x_offset = 0
         self.x = x
         self.y = y
@@ -25,7 +28,7 @@ class ProcessBar:
         self.bar_y = self.y + self.size * 2
         self.bar_h = self.size * 2
 
-    def set_progress(self, progress):
+    def set_progress(self, progress: int):
         """设置进度"""
         if progress < 0:
             self.progress = 0
@@ -39,7 +42,7 @@ class ProcessBar:
         """获取进度"""
         return self.progress
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface):
         if self.icon:
             screen.blit(self.icon, (self.x, self.y))
         # 绘制进度条外框

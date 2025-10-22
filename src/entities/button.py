@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pygame
 import os
 
@@ -7,9 +9,12 @@ from src.utils.tools import create_alpha_image, resource_path
 
 class ImageButton(pygame.sprite.Sprite):
     """图片按钮类"""
-    def __init__(self, image_path, x, y, width=None, height=None, text="",
-                 text_color=WHITE, font_size=12, hover_alpha=220, click_alpha=180,
-                 click_offset=2, action=None):
+
+    def __init__(self, image_path: str, x: int, y: int,
+                 width: Optional[int] = None, height: Optional[int] = None,
+                 text: str = "", text_color: tuple = WHITE, font_size: int = 12,
+                 hover_alpha: int = 220, click_alpha: int = 180,
+                 click_offset: int = 2, action=None):
         """
         初始化图片按钮
         
@@ -67,7 +72,7 @@ class ImageButton(pygame.sprite.Sprite):
         if self.text:
             self._render_text(font_size)
 
-    def _render_text(self, font_size):
+    def _render_text(self, font_size: int):
         """渲染按钮文本"""
         # 加载TTF字体文件
         try:
@@ -79,10 +84,10 @@ class ImageButton(pygame.sprite.Sprite):
         except (FileNotFoundError, pygame.error):
             # 如果字体文件不存在，使用系统默认字体
             font = pygame.font.SysFont(None, font_size)
-        
+
         self.text_surf = font.render(self.text, True, self.text_color)
         text_rect = self.text_surf.get_rect(center=self.rect.center)
-        
+
         # 将文本绘制到按钮图像上
         self.normal_image.blit(self.text_surf, text_rect)
         self.hover_image.blit(self.text_surf, text_rect)
@@ -97,7 +102,7 @@ class ImageButton(pygame.sprite.Sprite):
         else:
             self.image = self.normal_image
 
-    def update(self, event):
+    def update(self, event: pygame.event.Event):
         """更新按钮状态"""
         mouse_pos = pygame.mouse.get_pos()
         self.is_hovered = self.rect.collidepoint(mouse_pos)
