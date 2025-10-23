@@ -39,6 +39,6 @@ exe = EXE(
 app = BUNDLE(
     exe,
     name='main.app',
-    icon=None,
+    icon=['icon.icns'],
     bundle_identifier=None,
 )

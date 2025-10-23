@@ -13,7 +13,7 @@ from src.utils.tools import resource_path
 
 # Game basic information
 GAME_NAME = "Chemination"
-VERSION = "0.1.0"
+VERSION = "0.9.0"
 
 # Game window settings
 SCREEN_WIDTH = 1200

@@ -1,21 +1,11 @@
 # -*- mode: python ; coding: utf-8 -*-
-import os
-from PyInstaller.utils.hooks import collect_data_files
 
-# 收集 assets 目录下的所有文件
-datas = [('icon.ico', '.')]
-for root, dirs, files in os.walk('assets'):
-    for file in files:
-        src_path = os.path.join(root, file)
-        # 计算目标路径（保持相对路径结构）
-        dest_path = os.path.dirname(src_path)
-        datas.append((src_path, dest_path))
 
 a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=datas,
+    datas=[('assets', 'assets'), ('icon.ico', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
