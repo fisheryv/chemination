@@ -136,7 +136,8 @@ chemination/
 **PyInstaller** 
 
 ```bash
-pyinstaller main.spec
+pyinstaller build_win.spec # for windows
+pyinstaller build_mac.spec # for mac
 ```
 
 **Nuitka**
