@@ -1,8 +1,15 @@
+"""Main menu scene for the Chemination game.
+
+This module contains the MainMenuScene class that displays the game title,
+navigation buttons, and a fire particle effect.
+"""
+
 import pygame
 
 from src.config.settings import SCREEN_WIDTH, SCREEN_HEIGHT
 from src.entities.button import ImageButton
 from src.game.scene import Scene
+from src.utils.effects import FireEffect
 from src.utils.tools import resource_path
 
 
@@ -19,6 +26,12 @@ class MainMenuScene(Scene):
         self.background = pygame.image.load(resource_path("assets/images/ui/menu_bg.jpg"))  # Background image
         self.game_title = pygame.image.load(resource_path("assets/images/ui/game_title.png"))  # Game title image
         self.game_title = pygame.transform.scale(self.game_title, (400, 338))
+
+        # Create fire effect at the center bottom of the screen
+        fire_x = SCREEN_WIDTH // 2 + 13
+        fire_y = SCREEN_HEIGHT - 170  # Position fire near the fire on bg
+        self.fire_effect = FireEffect(fire_x, fire_y, intensity=12)
+
         button_width = int(270 * 0.6)
         button_height = int(110 * 0.6)
         _x = (SCREEN_WIDTH // 2 - button_width) // 2
@@ -51,7 +64,8 @@ class MainMenuScene(Scene):
 
     def update(self):
         """Update the scene state."""
-        pass
+        # Update fire effect
+        self.fire_effect.update()
 
     def render(self, screen: pygame.Surface):
         """Render the main menu scene to the screen.
@@ -61,6 +75,8 @@ class MainMenuScene(Scene):
         """
         screen_width, screen_height = screen.get_size()
         screen.blit(self.background, (0, 0))
+        # Draw fire effect first (behind the title)
+        self.fire_effect.draw(screen)
         screen.blit(self.game_title, ((screen_width - self.game_title.get_width()) // 2, 20))
         self.all_sprites.draw(screen)
 
