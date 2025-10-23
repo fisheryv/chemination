@@ -1,21 +1,31 @@
+"""Music and audio management for the Chemination game.
+
+This module contains functions for loading, playing, pausing, and stopping
+background music and sound effects.
+"""
+
 import pygame
 
 from src.config.settings import get_option
 from src.utils.tools import resource_path
 
 music_loaded = False
-music_playing = False
 
 
-def load_background_music(bgm: str):
-    """加载背景音乐"""
+def load_background_music(bgm: str, volume: float = 0.7):
+    """Load a background music file for playback.
+    
+    Args:
+        bgm:    Background music filename.
+        volume: Volume level for the music (default: 0.7).
+    """
     global music_loaded
     try:
         music_path = resource_path("assets/audios/" + bgm)
         pygame.mixer.music.load(resource_path(music_path))
-        pygame.mixer.music.set_volume(0.7)  # 设置音量
+        pygame.mixer.music.set_volume(volume)  # Set music volume
         music_loaded = True
-        # 根据设置决定是否播放音乐
+        # Play music based on settings
         if get_option("game", "music") == "off":
             stop_background_music()
         else:
@@ -26,30 +36,26 @@ def load_background_music(bgm: str):
         music_loaded = False
 
 
-def play_background_music():
-    """播放背景音乐"""
-    global music_playing
+def play_background_music(loops: int = -1):
+    """Play the loaded background music in loop.
+    
+    Args:
+        loops: Loop counts (default: -1 means infinite loop).
+    """
     if music_loaded:
-        pygame.mixer.music.play(-1)  # -1 表示循环播放
-        music_playing = True
+        pygame.mixer.music.play(loops)  # -1 means loop playback
 
 
 def stop_background_music():
-    """停止背景音乐"""
-    global music_playing
+    """Stop the background music."""
     pygame.mixer.music.stop()
-    music_playing = False
 
 
 def pause_background_music():
-    """暂停背景音乐"""
-    global music_playing
+    """Pause the background music."""
     pygame.mixer.music.pause()
-    music_playing = False
 
 
 def resume_background_music():
-    """恢复背景音乐"""
-    global music_playing
+    """Resume the paused background music."""
     pygame.mixer.music.unpause()
-    music_playing = True

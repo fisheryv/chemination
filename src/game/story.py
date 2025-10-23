@@ -48,16 +48,22 @@ story_book = [
 
 
 class StoryScene(Scene):
+    """Story scene that displays the game's narrative with animated transitions."""
 
     def __init__(self, parent):
-        super().__init__(parent)  # 调用父类的构造方法
-        self.background = None  # 背景图
+        """Initialize the story scene.
+        
+        Args:
+            parent: The parent game object that contains this scene.
+        """
+        super().__init__(parent)  # Call parent class constructor
+        self.background = None  # Background image
         self.story = None
-        # 加载TTF字体文件
+        # Load TTF font file
         try:
             self.font = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 36)
         except FileNotFoundError:
-            # 如果字体文件不存在，使用系统默认字体
+            # If font file does not exist, use system default font
             self.font = pygame.font.SysFont(None, 36)
         self.fade_surface = None
         self.line_surfaces = []
@@ -73,31 +79,37 @@ class StoryScene(Scene):
         self.init_story()
 
     def init_story(self, step: int = 0):
+        """Initialize story elements for the given step.
+        
+        Args:
+            step: The index of the story segment to display.
+        """
         self.show_count = 0
         self.story = story_book[step]
         bg = resource_path("assets/images/story/" + self.story['bg'])
-        # 加载背景图像
+        # Load background image
         self.background = pygame.image.load(bg)
         self.status = "FadeIn"
         self.line_surfaces = []
         for line in self.story["text"]:
-            line_surface = self.font.render(line, True, GOLD)  # 白色文本
+            line_surface = self.font.render(line, True, GOLD)  # White text
             self.line_surfaces.append(line_surface)
-        # 计算文本块的总高度
+        # Calculate total height of text block
         self.total_text_height = sum(surface.get_height() for surface in self.line_surfaces)
         if len(self.line_surfaces) > 1:
-            self.total_text_height += (len(self.line_surfaces) - 1) * 5  # 行间距
-            # 垂直居中位置计算
+            self.total_text_height += (len(self.line_surfaces) - 1) * 5  # Line spacing
+            # Vertical center position calculation
             self.text_block_y = (SCREEN_HEIGHT - self.total_text_height) // 2
         self.fade_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        # 创建半透明黑色矩形Surface
+        # Create semi-transparent black rectangle Surface
         rect_height = self.total_text_height + 20
         self.rectangle = pygame.Surface((SCREEN_WIDTH, rect_height), pygame.SRCALPHA)
-        self.rectangle.fill((0, 0, 0, 180))  # 半透明黑色
+        self.rectangle.fill((0, 0, 0, 180))  # Semi-transparent black
         self.rect_y = (SCREEN_HEIGHT - rect_height) // 2
-        self.rect_x = -SCREEN_WIDTH  # 初始位置在屏幕左侧外
+        self.rect_x = -SCREEN_WIDTH  # Initial position off-screen to the left
 
     def next_story(self):
+        """Advance to the next story segment or return to main menu if at the end."""
         self.step += 1
         if self.step >= len(story_book):
             self.parent.main_menu()
@@ -105,6 +117,7 @@ class StoryScene(Scene):
             self.init_story(self.step)
 
     def update(self):
+        """Update the story scene animation state."""
         if self.status == "FadeIn":
             self.fade_progress += 5
             if self.fade_progress >= 255:
@@ -113,7 +126,7 @@ class StoryScene(Scene):
             if self.fade_progress == 255:
                 self.status = "Text"
         elif self.status == "Text":
-            # 更新矩形位置
+            # Update rectangle position
             self.rect_x += 20
             if self.rect_x >= 0:
                 self.rect_x = 0
@@ -131,30 +144,38 @@ class StoryScene(Scene):
                 self.next_story()
 
     def _render_text(self, screen: pygame.Surface):
-        # 绘制矩形
+        """Render the story text and background rectangle.
+        
+        Args:
+            screen: The pygame surface to render to.
+        """
+        # Draw rectangle
         screen.blit(self.rectangle, (self.rect_x, self.rect_y))
 
-        # 绘制多行文本（水平居中，垂直居中）
+        # Draw multi-line text (horizontally centered, vertically centered)
         current_y = self.text_block_y
         for line_surface in self.line_surfaces:
             line_x = self.rect_x + (SCREEN_WIDTH - line_surface.get_width()) // 2
             screen.blit(line_surface, (line_x, current_y))
-            current_y += line_surface.get_height() + 5  # 5像素行间距
+            current_y += line_surface.get_height() + 5  # 5 pixel line spacing
 
     def render(self, screen: pygame.Surface):
-        """
-        绘制故事场景动画
-        1. 背景淡入
-        2. 从左自右飞入一个半透明黑色矩形
-        3. 矩形宽度与背景图宽度一致，高度为文本高度+20，矩形框垂直居中
-        4. 将文本绘制在半透明矩形内
-        5. 停留3秒后整个场景淡出
+        """Render story scene animation
+
+        1. Background fade in
+        2. A semi-transparent black rectangle flies in from left to right
+        3. Rectangle width matches background image width, height is text height + 20, rectangle is vertically centered
+        4. Draw text inside the semi-transparent rectangle
+        5. After staying for 3 seconds, the entire scene fades out
+
+        Args:
+            screen: The pygame surface to render to.
         """
         if self.status == "FadeIn":
             screen.blit(self.background, (0, 0))
             screen.blit(self.fade_surface, (0, 0))
         elif self.status == "Text" or self.status == "Show":
-            # 绘制背景
+            # Draw background
             screen.blit(self.background, (0, 0))
             self._render_text(screen)
         elif self.status == "FadeOut":
@@ -163,11 +184,16 @@ class StoryScene(Scene):
             screen.blit(self.fade_surface, (0, 0))
 
     def process_input(self, event: pygame.event.Event):
+        """Process user input events for the story scene.
+        
+        Args:
+            event: The pygame event to process.
+        """
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 self.parent.main_menu()
         elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1:  # 左键
+            if event.button == 1:  # Left click
                 self.next_story()
-            if event.button == 3:  # 右键
+            if event.button == 3:  # Right click
                 self.parent.main_menu()

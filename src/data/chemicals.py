@@ -1,6 +1,13 @@
-# 敌人（化学式）数据库
+"""Chemical enemy database for the Chemination game.
+
+This module contains the database of enemy chemicals, organized by type
+(acids, bases, salts, and metals). Each enemy has specific properties
+like health points and movement speed.
+"""
+
+# Enemy (chemical formula) database
 ENEMIES = {
-    # 酸类
+    # Acids
     "HCl": {
         "type": "acid",
         "hp": 3,
@@ -42,7 +49,7 @@ ENEMIES = {
         "speed": 2,
     },
     
-    # 碱类
+    # Bases
     "NaOH": {
         "type": "base",
         "hp": 4,
@@ -74,7 +81,7 @@ ENEMIES = {
         "speed": 4,
     },
     
-    # 盐类
+    # Salts
     "CuSO4": {
         "type": "salt",
         "hp": 3,
@@ -91,7 +98,7 @@ ENEMIES = {
         "speed": 2,
     },
     
-    # 金属类
+    # Metals
     "Au": {
         "type": "metal",
         "hp": 10,
@@ -109,18 +116,18 @@ ENEMIES = {
     }
 }
 
-# 敌人分组（用于帮助界面展示敌人信息）
+# Enemy grouping (for displaying enemy information in help interface)
 ENEMIES_SPIRIT = {
-    # 酸类 - 第一行
+    # Acids - Row 1
     "a1": ["HCl", "H2SO4", "HNO3", "HF"],
-    # 酸类 - 第二行
+    # Acids - Row 2
     "a2": ["H3PO4", "H2CO3", "HS", "CH3COOH"],
-    # 碱类 - 第一行
+    # Bases - Row 1
     "b1": ["NaOH", "KOH", "Ca(OH)2"],
-    # 碱类 - 第二行
+    # Bases - Row 2
     "b2": ["Ba(OH)2", "Mg(OH)2", "NH3·H2O"],
-    # 盐类
+    # Salts
     "s": ["CuSO4", "AgNO3", "BaCl2"],
-    # 金属类
+    # Metals
     "m": ["Au", "Fe", "Cu"]
 }

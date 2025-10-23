@@ -6,24 +6,30 @@ from src.game.scene import Scene
 from src.utils.tools import resource_path
 
 credits_text = [
-    "Producer:", "Fisher, Lucas",
-    "Scriptwriter:", "Fisher",
-    "Programmer:", "Fisher, Qwen-Coder-3",
-    "Artist:", "FLUX, PD_PixelCraft, Qwen-Image",
-    "Music:", '"The Ring of Load"'
+    "Producer", "Fisher, Lucas",
+    "Scriptwriter", "Fisher",
+    "Programmer", "Fisher, Qwen-Coder-3",
+    "Artist", "FLUX, PD_PixelCraft, Qwen-Image, \"Pokémon\", \"Grinsia\"",
+    "Music:", "from online sources"
 ]
 
 
 class CreditsScene(Scene):
+    """Credits scene class"""
 
     def __init__(self, parent):
-        super().__init__(parent)  # 调用父类的构造方法
-        self.background = pygame.image.load(resource_path("assets/images/ui/credits_bg.jpg"))  # 背景图
+        """Initialize credits scene
+
+        Args:
+            parent: The parent game object that contains this scene.
+        """
+        super().__init__(parent)  # Call parent class constructor
+        self.background = pygame.image.load(resource_path("assets/images/ui/credits_bg.jpg"))  # Background image
         try:
             font1 = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 28)
             font2 = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 28)
         except FileNotFoundError:
-            # 如果字体文件不存在，使用系统默认字体
+            # If font file does not exist, use system default font
             font1 = pygame.font.SysFont(None, 28)
             font2 = pygame.font.SysFont(None, 28)
         font1.set_underline(True)
@@ -41,22 +47,33 @@ class CreditsScene(Scene):
                                   _x, _y, button_width, button_height,
                                   action=self.parent.main_menu)
 
-        # 创建精灵组
+        # Create sprite group
         self.all_sprites = pygame.sprite.Group()
-        # 将按钮添加到精灵组
+        # Add button to sprite group
         self.all_sprites.add(button_back)
 
     def update(self):
+        """Update scene state"""
         pass
 
     def render(self, screen: pygame.Surface):
+        """Render the credits scene to the screen.
+
+        Args:
+            screen: The pygame surface to render to.
+        """
         screen.blit(self.background, (0, 0))
         current_y = 80
         for i, line_surface in enumerate(self.line_surfaces):
             line_x = (SCREEN_WIDTH - line_surface.get_width()) // 2
             screen.blit(line_surface, (line_x, current_y))
-            current_y += line_surface.get_height() + (10 if i % 2 == 0 else 30)  # 5像素行间距
+            current_y += line_surface.get_height() + (10 if i % 2 == 0 else 30)
         self.all_sprites.draw(screen)
 
     def process_input(self, event: pygame.event.Event):
+        """Process user input events.
+
+        Args:
+            event: The pygame event to process.
+        """
         self.all_sprites.update(event)

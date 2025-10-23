@@ -1,3 +1,9 @@
+"""Main entry point for the Chemination game.
+
+This module serves as the main entry point for the Chemination game. It initializes
+the pygame library, creates the game window, and starts the main game loop.
+"""
+
 import pygame
 import sys
 
@@ -6,32 +12,35 @@ from src.utils.tools import resource_path
 
 
 def main():
-    """主函数"""
-    # 初始化Pygame
-    pygame.init()
-    pygame.mixer.init()  # 初始化音频模块
+    """Initialize and run the main game loop.
     
+    This function initializes the pygame library, sets up the game window,
+    loads settings, and starts the main game controller.
+    """
+    pygame.init()  # Initialize Pygame
+    pygame.mixer.init()  # Initialize audio module
+
     try:
-        # 设置窗口图标
+        # Set window icon
         icon = pygame.image.load(resource_path("icon.ico"))
         pygame.display.set_icon(icon)
     except Exception as e:
-        print("警告: 无法加载图标文件 icon.ico", e)
-    
-    # 创建游戏窗口
+        print("Warning: Unable to load icon file icon.ico", e)
+
+    # Create game window
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption(GAME_NAME)
-    
-    # 加载设置
+
+    # Load settings
     load_settings()
-    
-    # 导入并运行游戏主类
+
+    # Import and run the main game class
     try:
         from src.game.game import Game
         game = Game(screen)
         game.run()
     except Exception as e:
-        print(f"游戏运行出错: {e}")
+        print(f"Error running game: {e}")
         pygame.quit()
         sys.exit(1)
 

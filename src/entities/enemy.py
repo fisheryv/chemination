@@ -1,3 +1,10 @@
+"""Enemy entities for the Chemination game.
+
+This module contains the Enemy class that represents the chemical enemies
+in the game. Each enemy has specific properties based on its chemical type
+and behavior in the game world.
+"""
+
 import random
 import pygame
 
@@ -7,119 +14,135 @@ from src.utils.tools import load_sprite_row, resource_path
 
 
 class Enemy(pygame.sprite.Sprite):
-    """敌人类"""
+    """Represents a chemical enemy in the game.
+    
+    This class handles enemy behavior, including movement, animation,
+    health management, and interactions with the player.
+    """
 
     def __init__(self, name: str, params: dict):
-        """
-        初始化敌人
+        """Initialize an enemy with the given parameters.
         
         Args:
-            name (str): 敌人名称（化学式）
-            params (dict): 敌人参数（类型、血量、速度）
+            name:   Enemy name (chemical formula).
+            params: Enemy parameters (type, health, speed).
         """
         super().__init__()
         self.name = name
         self.params = params
 
-        # 加载敌人动画帧
+        # Load enemy animation frames
         try:
             self.frames = load_sprite_row(f"assets/images/enemy/{name}.png", 4, scale=1)
         except pygame.error:
-            # 如果无法加载图片，创建一个默认的矩形作为替代
+            # If unable to load image, create a default rectangle as substitute
             self.frames = [pygame.Surface((50, 50), pygame.SRCALPHA)]
             self.frames[0].fill((200, 100, 100, 200))
 
-        # 加载血量图标
+        # Load health icons
         try:
             self.heart1 = pygame.image.load(resource_path("assets/images/ui/heart1.png"))
             self.heart3 = pygame.image.load(resource_path("assets/images/ui/heart3.png"))
         except pygame.error:
-            # 如果无法加载图片，创建简单的替代图形
+            # If unable to load images, create simple substitute graphics
             self.heart1 = pygame.Surface((20, 20), pygame.SRCALPHA)
             self.heart1.fill((255, 0, 0, 128))
             self.heart3 = pygame.Surface((20, 20), pygame.SRCALPHA)
             self.heart3.fill((0, 255, 0, 128))
 
-        # 动画相关属性
+        # Animation related properties
         self.current_frame = 0
         self.animation_speed = 0.15
         self.image = self.frames[self.current_frame]
         self.rect = self.image.get_rect()
 
-        # 位置初始化（从屏幕右侧随机位置生成）
+        # Position initialization (generated from random position on right side of screen)
         self.rect.x = SCREEN_WIDTH + random.randint(0, 100)
         self.rect.y = random.randint(120, SCREEN_HEIGHT - 120 - self.rect.height)
 
-        # 物理属性
+        # Physical properties
         self.speed = params["speed"]
         self.health = params["hp"]
         self.type = params["type"]
 
-        # 渲染敌人名称
+        # Render enemy name
         font = pygame.font.SysFont(None, 24)
         self.name_surface = font.render(self.name, True, WHITE)
 
-        # 冻结状态
+        # Freeze state
         self.is_freeze = False
 
     def freeze(self):
-        """冻结敌人"""
+        """Freeze the enemy, preventing movement.
+        
+        When frozen, the enemy will not move until unfrozen.
+        """
         self.is_freeze = True
 
     def unfreeze(self):
-        """解冻敌人"""
+        """Unfreeze the enemy, allowing movement again.
+        
+        Resumes normal enemy movement and behavior.
+        """
         self.is_freeze = False
 
     def update(self):
-        """更新敌人状态"""
-        # 如果被冻结，不更新位置
+        """Update the enemy's state for each frame.
+        
+        Handles enemy movement, animation, and boundary checking.
+        If the enemy is frozen, no updates are performed.
+        """
+        # If frozen, do not update position
         if self.is_freeze:
             return
 
-        # 更新位置
+        # Update position
         self.rect.x -= self.speed
 
-        # 更新动画帧
+        # Update animation frames
         self.current_frame += self.animation_speed
         if self.current_frame >= len(self.frames):
             self.current_frame = 0
         self.image = self.frames[int(self.current_frame)]
 
-        # 边界检查：如果敌人离开屏幕左侧，则触发逃脱事件并删除
+        # Boundary check: if enemy leaves left side of screen, trigger escape event and delete
         if self.rect.right < 0:
-            # 触发敌人逃脱事件
+            # Trigger enemy escape event
             pygame.event.post(pygame.event.Event(ENEMY_ESCAPED, {
                 'enemy': self,
                 'damage': self.health
             }))
-            # 删除敌人
+            # Delete enemy
             self.kill()
 
     def draw_hp(self, screen: pygame.Surface):
-        """
-        绘制敌人血量
+        """Draw the enemy's health information on screen.
+        
+        Renders the enemy's health points as icons above the enemy sprite.
         
         Args:
-            screen (pygame.Surface): 屏幕表面
+            screen: Screen surface to draw on.
         """
-        # 绘制血量图标
+        # Draw health icons
         _x = self.rect.x + (self.rect.width - self.heart1.get_width() * self.params["hp"]) / 2
         for i in range(self.params["hp"]):
             heart_image = self.heart3 if i < self.health else self.heart1
             screen.blit(heart_image, (_x + i * self.heart3.get_width(), self.rect.y - self.heart3.get_height()))
 
-        # 绘制敌人名称
+        # Draw enemy name
         _x = self.rect.x + (self.rect.width - self.name_surface.get_width()) / 2
         screen.blit(self.name_surface, (_x, self.rect.bottom))
 
     def take_damage(self, bullet_type: BulletType):
-        """
-        敌人受到伤害
+        """Apply damage to the enemy based on bullet type.
+        
+        Determines if the enemy is vulnerable to the bullet type and reduces
+        health accordingly. If health reaches zero, the enemy is removed.
         
         Args:
-            bullet_type (BulletType): 子弹类型
+            bullet_type: Type of bullet that hit the enemy.
         """
-        # 判断是否受到伤害
+        # Determine if damage is taken
         if bullet_type == BulletType.ACID:
             _damage = self.type == "metal" or self.type == "base"
         elif bullet_type == BulletType.BASE:
@@ -127,14 +150,14 @@ class Enemy(pygame.sprite.Sprite):
         else:  # BulletType.METAL
             _damage = self.type == "salt"
 
-        # 如果受到伤害，减少血量
+        # If damage is taken, reduce health
         if _damage:
             self.health -= 1
             if self.health <= 0:
-                # 触发敌人击杀事件
+                # Trigger enemy kill event
                 pygame.event.post(pygame.event.Event(ENEMY_KILLED, {
                     'enemy': self,
                     'damage': 0
                 }))
-                # 删除敌人
+                # Delete enemy
                 self.kill()

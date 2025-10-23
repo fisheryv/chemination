@@ -147,8 +147,8 @@ nuitka --standalone --onefile \
   --include-data-dir=./assets=assets \
   --output-dir=out \
   --windows-icon-from-ico=icon.ico \
+  --windows-console-mode=disable \
   --remove-output \
-  --windows-disable-console\
   main.py
 ```
 

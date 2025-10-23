@@ -1,3 +1,9 @@
+"""Utility functions for the Chemination game.
+
+This module contains various utility functions used throughout the game,
+including resource management, image processing, and sprite handling.
+"""
+
 import os
 import sys
 
@@ -5,17 +11,23 @@ import pygame
 from pygame import BLEND_RGBA_MULT
 from pathlib import Path
 
+# PyInstaller creates a temp folder and stores path in `_MEIPASS`
+# For Nuitka, the temp folder path is unknown.
+# We have to get current running script path to find the base path
+BASE_PATH = sys._MEIPASS if hasattr(sys, '_MEIPASS') else (
+    Path(__file__).resolve().parent.parent.parent if "NUITKA_ONEFILE_PARENT" in os.environ else
+    os.getcwd())
+
 
 def create_alpha_image(image, alpha):
-    """
-    创建具有指定透明度的图像副本
+    """Create a copy of an image with specified alpha transparency.
     
     Args:
-        image (pygame.Surface): 原始图像
-        alpha (int): 透明度值 (0-255)
+        image: Original image surface.
+        alpha: Alpha transparency value (0-255).
         
     Returns:
-        pygame.Surface: 带有指定透明度的新图像
+        pygame.Surface: New image with specified alpha transparency.
     """
     alpha_image = image.copy()
     alpha_image.fill((255, 255, 255, alpha), None, BLEND_RGBA_MULT)
@@ -23,52 +35,44 @@ def create_alpha_image(image, alpha):
 
 
 def resource_path(relative_path: str):
-    """
-    获取资源的绝对路径，兼容开发环境和打包后环境
+    """Get absolute path to resource, works for dev and bundled versions.
+    
+    This function handles resource paths for both development and bundled
+    versions of the game (e.g., PyInstaller or Nuitka builds).
     
     Args:
-        relative_path (str): 相对路径
+        relative_path: Relative path to resource from the base directory.
         
     Returns:
-        str: 资源的绝对路径
+        str: Absolute path to the resource.
     """
-    if hasattr(sys, '_MEIPASS'):
-        # PyInstaller 创建临时文件夹，将路径存储在 _MEIPASS 中
-        base_path = sys._MEIPASS
-        print("_MEIPASS = " + base_path)
-    elif __file__ is not None:
-        # In Nuitka onefile mode, __file__ for the main module points to the temporary extraction location.
-        current_path = Path(__file__).resolve()
-        parent_path = current_path.parent
-        base_path = parent_path.parent.parent
-    else:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
+    return os.path.join(BASE_PATH, relative_path)
 
 
 def load_sprite_sheet(filename: str, rows: int, cols: int,
                       directions: tuple = ('down', 'left', 'right', 'up'),
                       scale: float = 1.0) -> dict[str, list[pygame.Surface]]:
-    """
-    从精灵图中加载并分割所有帧（多行精灵图）
+    """Load and split all frames from a multi-row sprite sheet.
+    
+    This function loads a sprite sheet image and splits it into individual frames
+    organized by direction. It handles errors gracefully by providing substitute graphics.
     
     Args:
-        filename (str): 精灵图文件路径
-        rows (int): 精灵图行数
-        cols (int): 精灵图列数
-        directions (tuple): 方向标签
-        scale (float): 缩放比例
+        filename:   Path to the sprite sheet file.
+        rows:       Number of rows in the sprite sheet.
+        cols:       Number of columns in the sprite sheet.
+        directions: Direction labels for each row.
+        scale:      Scaling factor for the frames.
         
     Returns:
-        dict: 按方向分组的帧列表
+        dict: Dictionary with direction keys and lists of frames as values.
     """
     try:
         filepath = resource_path(filename)
         sprite_sheet = pygame.image.load(filepath).convert_alpha()
     except pygame.error as e:
-        print(f"无法加载精灵图 {filename}: {e}")
-        # 创建一个简单的替代精灵图
+        print(f"Unable to load sprite sheet {filename}: {e}")
+        # Create a simple substitute sprite sheet
         sprite_sheet = pygame.Surface((cols * 50, rows * 50), pygame.SRCALPHA)
         sprite_sheet.fill((200, 100, 100, 200))
 
@@ -85,18 +89,18 @@ def load_sprite_sheet(filename: str, rows: int, cols: int,
                     pygame.Rect(col * frame_width, row * frame_height, frame_width, frame_height)
                 )
             except ValueError:
-                # 如果子表面超出范围，创建一个默认帧
+                # If subsurface is out of bounds, create a default frame
                 frame = pygame.Surface((frame_width, frame_height), pygame.SRCALPHA)
                 frame.fill((100, 200, 100, 200))
 
-            # 缩放帧
+            # Scale frame
             if scale != 1:
                 new_width = int(frame_width * scale)
                 new_height = int(frame_height * scale)
                 frame = pygame.transform.scale(frame, (new_width, new_height))
             direction_frames.append(frame)
 
-        # 确保方向标签不超出范围
+        # Ensure direction label is within bounds
         direction_key = directions[row] if row < len(directions) else f"direction_{row}"
         frames[direction_key] = direction_frames
 
@@ -104,23 +108,25 @@ def load_sprite_sheet(filename: str, rows: int, cols: int,
 
 
 def load_sprite_row(filename: str, cols: int, scale: float = 1.0) -> list[pygame.Surface]:
-    """
-    从精灵图中加载并分割所有帧（单行精灵图）
+    """Load and split all frames from a single-row sprite sheet.
+    
+    This function loads a single-row sprite sheet image and splits it into individual frames.
+    It handles errors gracefully by providing substitute graphics.
     
     Args:
-        filename (str): 精灵图文件路径
-        cols (int): 精灵图列数
-        scale (float): 缩放比例
+        filename: Path to the sprite sheet file.
+        cols:     Number of columns in the sprite sheet.
+        scale:    Scaling factor for the frames.
         
     Returns:
-        list: 帧列表
+        list: List of frames.
     """
     try:
         filepath = resource_path(filename)
         sprite_sheet = pygame.image.load(filepath).convert_alpha()
     except pygame.error as e:
-        print(f"无法加载精灵图 {filename}: {e}")
-        # 创建一个简单的替代精灵图
+        print(f"Unable to load sprite sheet {filename}: {e}")
+        # Create a simple substitute sprite sheet
         sprite_sheet = pygame.Surface((cols * 50, 50), pygame.SRCALPHA)
         sprite_sheet.fill((100, 100, 200, 200))
 
@@ -134,11 +140,11 @@ def load_sprite_row(filename: str, cols: int, scale: float = 1.0) -> list[pygame
                 pygame.Rect(col * frame_width, 0, frame_width, frame_height)
             )
         except ValueError:
-            # 如果子表面超出范围，创建一个默认帧
+            # If subsurface is out of bounds, create a default frame
             frame = pygame.Surface((frame_width, frame_height), pygame.SRCALPHA)
             frame.fill((100, 200, 100, 200))
 
-        # 缩放帧
+        # Scale frame
         if scale != 1:
             new_width = int(frame_width * scale)
             new_height = int(frame_height * scale)

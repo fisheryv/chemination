@@ -36,12 +36,18 @@ WORDS = [
 class OptionsScene(Scene):
 
     def __init__(self, parent):
-        super().__init__(parent)  # 调用父类的构造方法
-        self.background = pygame.image.load(resource_path("assets/images/ui/options_bg.jpg"))  # 背景图
+        """
+        Initialize the operation scene.
+
+        Args:
+            parent: The parent game object that contains this scene.
+        """
+        super().__init__(parent)  # Call parent class constructor
+        self.background = pygame.image.load(resource_path("assets/images/ui/options_bg.jpg"))  # Background image
         try:
             font = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 28)
         except FileNotFoundError:
-            # 如果字体文件不存在，使用系统默认字体
+            # If font file does not exist, use system default font
             font = pygame.font.SysFont(None, 28)
         self.line_surfaces = []
         for line in option_text:
@@ -50,8 +56,8 @@ class OptionsScene(Scene):
         try:
             font = pygame.font.Font(resource_path("assets/fonts/PixelEmulator.ttf"), 16)
         except FileNotFoundError:
-            # 如果字体文件不存在，使用系统默认字体
-            font = pygame.font.SysFont(None, 28)
+            # If font file does not exist, use system default font
+            font = pygame.font.SysFont(None, 16)
         self.words_surfaces = []
         for line in WORDS:
             line_surface = font.render(line, True, BLACK)
@@ -72,27 +78,35 @@ class OptionsScene(Scene):
         _initial_state = get_option("game", "intro") == "on"
         intro_switcher = Switcher(_x, _y, button_width, button_height, initial_state=_initial_state,
                                   action=self.parent.intro_toggle)
-        # 创建精灵组
+        # Create sprite group
         self.all_sprites = pygame.sprite.Group()
-        # 将按钮添加到精灵组
+        # Add button to sprite group
         self.all_sprites.add(button_back, music_switcher, intro_switcher)
 
     def update(self):
         pass
 
-    def render(self, screen:pygame.Surface):
+    def render(self, screen: pygame.Surface):
+        """Render the options scene to the screen.
+
+        Args:
+            screen: The pygame surface to render to.
+        """
         screen.blit(self.background, (0, 0))
-        current_y = 120
+        _x, _y = 180, 120
         for line_surface in self.words_surfaces:
-            line_x = 180
-            screen.blit(line_surface, (line_x, current_y))
-            current_y += line_surface.get_height() + 5
-        current_y = 160
+            screen.blit(line_surface, (_x, _y))
+            _y += line_surface.get_height() + 5
+        _x, _y = 830, 160
         for line_surface in self.line_surfaces:
-            line_x = 830 - line_surface.get_width()
-            screen.blit(line_surface, (line_x, current_y))
-            current_y += line_surface.get_height() + 70
+            screen.blit(line_surface, (_x - line_surface.get_width(), _y))
+            _y += line_surface.get_height() + 70
         self.all_sprites.draw(screen)
 
     def process_input(self, event: pygame.event.Event):
+        """Process user input events for the options scene.
+
+        Args:
+            event: The pygame event to process.
+        """
         self.all_sprites.update(event)

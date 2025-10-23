@@ -1,3 +1,10 @@
+"""Player character entities for the Chemination game.
+
+This module contains the Hero and Avatar classes that represent the player's characters
+in the game. It handles character animations, movement, shooting, and switching between
+different hero types (Base Knight, Acid Hitman, and Metal Elf).
+"""
+
 import pygame
 from pygame.locals import *
 
@@ -5,23 +12,26 @@ from src.config.settings import SCREEN_HEIGHT, HERO_ATTACK
 from src.entities.bullet import BulletType
 from src.utils.tools import load_sprite_sheet, load_sprite_row
 
-# 子弹类型映射
+# Bullet type mapping
 BULLET_TYPES = [BulletType.BASE, BulletType.ACID, BulletType.METAL]
 
 
 class Avatar:
-    """玩家角色外观类"""
+    """Represents the visual appearance of a player character.
+    
+    This class handles the loading and management of character animations,
+    including walking and attack animations for different hero types.
+    """
 
     def __init__(self, hero_type: int):
-        """
-        初始化角色外观
+        """Initialize character appearance.
         
         Args:
-            hero_type (int): 角色类型 (0: 碱, 1: 酸, 2: 盐)
+            hero_type: Character type (0: base, 1: acid, 2: metal)
         """
         self.hero_type = hero_type
 
-        # 加载行走动画帧（下、左、上方向）
+        # Load walking animation frames (down, left, up directions)
         try:
             self.animations = load_sprite_sheet(
                 f"assets/images/spirits/hero{self.hero_type + 1}.png",
@@ -30,16 +40,16 @@ class Avatar:
                 scale=1
             )
         except pygame.error:
-            # 如果无法加载图片，创建简单的替代图形
+            # If unable to load image, create simple substitute graphics
             self.animations = self._create_default_animations()
 
-        # 通过水平镜像生成向右行走帧
+        # Generate right walking frames through horizontal mirroring
         direction_frames = []
         for f in self.animations["left"]:
             direction_frames.append(pygame.transform.flip(f, True, False))
         self.animations["right"] = direction_frames
 
-        # 加载攻击动画
+        # Load attack animation
         try:
             self.attack = load_sprite_row(
                 f"assets/images/spirits/hero{self.hero_type + 1}_attack.png",
@@ -47,43 +57,59 @@ class Avatar:
                 scale=1
             )
         except pygame.error:
-            # 如果无法加载攻击动画，使用行走动画的第一帧作为替代
+            # If unable to load attack animation, use the first frame of walking animation as substitute
             self.attack = self.animations["right"][:4] if len(self.animations["right"]) >= 4 else [self.animations[
                                                                                                        "right"][0]] * 4
 
     def _create_default_animations(self):
-        """创建默认动画帧"""
-        # 创建一个简单的彩色矩形作为默认角色外观
+        """Create default animation frames for fallback graphics.
+        
+        Creates simple colored rectangles as substitute graphics when image files
+        cannot be loaded. Each character type gets a different color.
+        
+        Returns:
+            dict: Dictionary mapping directions to lists of animation frames.
+        """
+        # Create a simple colored rectangle as default character appearance
         default_frames = []
-        colors = [(100, 100, 255), (100, 255, 100), (255, 100, 100)]  # 蓝、绿、红
+        colors = [pygame.Color(100, 100, 255, 200),  # BLUE
+                  pygame.Color(100, 255, 100, 200),  # GREEN
+                  pygame.Color(255, 100, 100, 200),  # RED
+                  ]
         for color in colors:
             frame = pygame.Surface((50, 80), pygame.SRCALPHA)
-            frame.fill((*color, 200))  # 添加透明度
+            frame.fill(color)  # Fill color
             default_frames.append(frame)
 
-        # 将帧分配给不同方向
+        # Assign frames to different directions
         return {
             "down": [default_frames[0]],
             "left": [default_frames[1]],
             "up": [default_frames[2]],
-            "right": [default_frames[1]]  # 右方向使用左方向的镜像
+            "right": [default_frames[1]]  # Right direction uses mirrored left direction
         }
 
 
 class Hero(pygame.sprite.Sprite):
-    """玩家角色类"""
+    """Main player character class.
+    
+    This class represents the player-controlled character in the game. It handles
+    character movement, animation, shooting, and switching between different hero types.
+    """
 
     def __init__(self):
-        """
-        初始化玩家角色
+        """Initialize player character.
+        
+        Sets up the initial state of the player character, including position,
+        animation properties, and physical attributes.
         """
         super().__init__()
-        self.hero_type = 0  # 默认角色类型（碱类）
+        self.hero_type = 0  # Default character type (base)
 
-        # 创建角色外观实例
+        # Create character appearance instances
         self.avatars = [Avatar(0), Avatar(1), Avatar(2)]
 
-        # 动画相关属性
+        # Animation related properties
         self.current_direction = 'right'
         self.current_frame = 0
         self.animation_speed = 0.2
@@ -91,22 +117,24 @@ class Hero(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (100, SCREEN_HEIGHT // 2)
 
-        # 物理属性
+        # Physical properties
         self.speed = 5
         self.last_shot = 0
-        self.shoot_delay = 300  # 毫秒
+        self.shoot_delay = 300  # milliseconds
 
-        # 状态属性
+        # Status properties
         self.walking = False
-        self.direction = 1  # 1 向右, -1 向左
+        self.direction = 1  # 1 right, -1 left
         self.attacking = False
 
     def change_hero(self, hero_type: int):
-        """
-        切换角色类型
+        """Switch to a different character type.
+        
+        Changes the current hero type and updates the character's visual appearance
+        while maintaining the character's position on screen.
         
         Args:
-            hero_type (int): 新的角色类型
+            hero_type: New character type (0: base, 1: acid, 2: metal)
         """
         self.hero_type = hero_type
         old_center = self.rect.center
@@ -118,14 +146,18 @@ class Hero(pygame.sprite.Sprite):
         self.rect.center = old_center
 
     def update(self):
-        """更新角色状态"""
-        # 处理攻击动画
+        """Update the character's state for each frame.
+        
+        Handles character animations, movement, and input processing. This method
+        is called once per frame to update the character's position and appearance.
+        """
+        # Handle attack animation
         if self.attacking:
             self.current_frame += 0.25
             if self.current_frame >= len(self.avatars[self.hero_type].attack):
                 self.current_frame = 0
                 self.attacking = False
-                # 触发攻击事件
+                # Trigger attack event
                 pygame.event.post(pygame.event.Event(HERO_ATTACK, {
                     'x': self.rect.centerx,
                     'y': self.rect.centery,
@@ -135,21 +167,21 @@ class Hero(pygame.sprite.Sprite):
             self.image = self.avatars[self.hero_type].attack[int(self.current_frame)]
             return
 
-        # 获取按键状态
+        # Get key state
         keys = pygame.key.get_pressed()
 
-        # 切换角色类型
+        # Switch character type
         if keys[K_1]:
-            self.change_hero(0)  # 碱类
+            self.change_hero(0)  # Base
         elif keys[K_2]:
-            self.change_hero(1)  # 酸类
+            self.change_hero(1)  # Acid
         elif keys[K_3]:
-            self.change_hero(2)  # 盐类
+            self.change_hero(2)  # Salt
 
-        # 处理移动
+        # Handle movement
         self.walking = False
 
-        # 水平移动（已注释，如需启用可取消注释）
+        # Horizontal movement (commented out, can be uncommented if needed)
         # if keys[K_LEFT] or keys[K_a]:
         #     self.current_direction = 'left'
         #     self.rect.x -= self.speed
@@ -161,7 +193,7 @@ class Hero(pygame.sprite.Sprite):
         #     self.walking = True
         #     self.direction = 1
 
-        # 垂直移动
+        # Vertical movement
         if keys[K_UP] or keys[K_w]:
             self.current_direction = 'up'
             self.rect.y -= self.speed
@@ -171,31 +203,35 @@ class Hero(pygame.sprite.Sprite):
             self.rect.y += self.speed
             self.walking = True
 
-        # 边界检查
-        # 限制水平移动边界（如需启用可取消注释）
+        # Boundary check
+        # Limit horizontal movement boundary (can be uncommented if needed)
         # if self.rect.left < 0:
         #     self.rect.left = 0
         # if self.rect.right > SCREEN_WIDTH:
         #     self.rect.right = SCREEN_WIDTH
 
-        # 限制垂直移动边界
+        # Limit vertical movement boundary
         if self.rect.top < 120:
             self.rect.top = 120
         if self.rect.bottom > SCREEN_HEIGHT - 120:
             self.rect.bottom = SCREEN_HEIGHT - 120
 
-        # 更新动画帧
+        # Update animation frames
         if self.walking:
             self.current_frame += self.animation_speed
             if self.current_frame >= len(self.avatars[self.hero_type].animations[self.current_direction]):
                 self.current_frame = 0
             self.image = self.avatars[self.hero_type].animations[self.current_direction][int(self.current_frame)]
         else:
-            # 空闲时使用第一帧
+            # Use first frame when idle
             self.image = self.avatars[self.hero_type].animations[self.current_direction][0]
 
     def shoot(self):
-        """发射子弹"""
+        """Fire a bullet from the character's current position.
+        
+        Creates a bullet projectile based on the current hero type and direction.
+        Implements a delay between shots to prevent continuous firing.
+        """
         now = pygame.time.get_ticks()
         if now - self.last_shot > self.shoot_delay:
             self.last_shot = now
